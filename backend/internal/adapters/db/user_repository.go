@@ -18,18 +18,18 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 func (r *userRepositoryImpl) RegisterNewUser(user *models.User) error {
 	query := `
 		INSERT INTO users (
-			nickname, username, date_of_birth, gender, password_hash,
+			nick_name, user_name, date_of_birth, gender, password,
 			email, first_name, last_name, avatar_path, about_me, is_public
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	_, err := r.db.Exec(
 		query,
-		user.Nickname,
-		user.Username,
+		user.NickName,
+		user.UserName,
 		user.DateOfBirth,
 		user.Gender,
-		user.PasswordHash,
+		user.Password,
 		user.Email,
 		user.FirstName,
 		user.LastName,
@@ -49,11 +49,10 @@ func (r *userRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 	user := &models.User{}
 	err := r.db.QueryRow(query, id).Scan(
 		&user.Id,
-		&user.Nickname,
-		&user.Username,
+		&user.NickName,
 		&user.DateOfBirth,
 		&user.Gender,
-		&user.PasswordHash,
+		&user.Password,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
@@ -77,11 +76,11 @@ func (r *userRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 	user := &models.User{}
 	err := r.db.QueryRow(query, email).Scan(
 		&user.Id,
-		&user.Nickname,
-		&user.Username,
+		&user.NickName,
+		&user.UserName,
 		&user.DateOfBirth,
 		&user.Gender,
-		&user.PasswordHash,
+		&user.Password,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,

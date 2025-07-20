@@ -2,7 +2,7 @@ package service
 
 import "time"
 
-type SessionServicePort interface {
+type SessionService interface {
 	CreateSession(userID int) (string, time.Time, error)
 	DestroySession(token string) error
 	IsValidSession(token string) bool

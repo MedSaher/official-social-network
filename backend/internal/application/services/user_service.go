@@ -20,13 +20,13 @@ func NewUserService(userRepo repository.UserRepository) *UserServiceImpl {
 func (s *UserServiceImpl) Register(user *models.User) error {
 	fmt.Println("User to register:", user)
 
-	hashedPassword, err := utils.HashPassword(user.PasswordHash)
+	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
-	user.Nickname = string(user.LastName[0]) + user.FirstName
-	user.PasswordHash = hashedPassword
+	user.NickName = string(user.LastName[0]) + user.FirstName
+	user.Password = hashedPassword
 
 	return s.userRepo.RegisterNewUser(user)
 }
@@ -37,7 +37,7 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 	}
 
 	user, err := s.userRepo.GetUserByEmail(email)
-	if err != nil || !utils.CheckPasswordHash(password, user.PasswordHash) {
+	if err != nil || !utils.CheckPasswordHash(password, user.Password) {
 		return nil, errors.New("invalid credentials")
 	}
 

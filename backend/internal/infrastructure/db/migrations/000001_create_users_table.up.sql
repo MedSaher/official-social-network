@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nickname TEXT,
-    username TEXT UNIQUE NOT NULL,
+    nick_name TEXT,
+    user_name TEXT UNIQUE NOT NULL,
     date_of_birth DATE NOT NULL,
     gender TEXT NOT NULL,
     password_hash TEXT NOT NULL,
