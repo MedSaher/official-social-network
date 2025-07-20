@@ -48,16 +48,19 @@ func main() {
 	usersRepository := repositories.NewUsersRepository(databaseConnection)
 	sessionRepository := repositories.NewSessionsRepository(databaseConnection)
 	messageRepository := repositories.NewMessageRepository(databaseConnection)
+	postsRepository := repositories.NewPostsRepository(databaseConnection)
 
 	// Services initialization
 	usersServices := services.NewUsersServices(usersRepository)
 	sessionService := services.NewSessionsServices(usersRepository, sessionRepository)
 	webSocketService := services.NewWebSocketService(chatBroker, messageRepository, sessionRepository, usersRepository)
+	postsServices := services.NewPostService(postsRepository, sessionRepository)
 	// messagesService := services.NewMessageService(messageRepository, sessionRepository)
 
 	// Handlers initialization
 	usersHandlers := handlers.NewUsersHandlers(chatBroker, usersServices, sessionService)
 	webSocketHandler := handlers.NewWebSocketHandler(webSocketService, sessionService)
+	 postsHandlers := handlers.NewPostsHandlers(postsServices)
 	// messagesHandler := handlers.NewMessagesHandler(messagesService, sessionService)
 
 	// Router initialization and routes setup
@@ -69,9 +72,15 @@ func main() {
 	mainRouter.AddRoute("POST", "/api/logout", usersHandlers.UsersLogoutHandler)
 	mainRouter.AddRoute("GET", "/api/check-session", usersHandlers.CheckSessionHandler)
 
-
 	// websocket and chat routes:
 	mainRouter.AddRoute("GET", "/api/ws", webSocketHandler.SocketHandler)
+
+	// // Post routes
+	mainRouter.AddRoute("POST", "/api/post", postsHandlers.CreatePostsHandler)
+	// mainRouter.AddRoute("GET", "/api/posts", postsHandlers.GetAllPostsHandler)
+	// mainRouter.AddRoute("POST", "/api/post/update", postsHandlers.UpdatePostHandler)
+	// mainRouter.AddRoute("POST", "/api/post/delete", postsHandlers.DeletePostHandler)
+	// mainRouter.AddRoute("GET", "/api/post/single", postsHandlers.GetSinglePostHandler)
 
 	// Print message indicating the server is listening
 	fmt.Println("Listening on port: http://localhost:8080/")
@@ -168,12 +177,6 @@ mainRouter.AddRoute("GET", "/api/check-session", usersHandlers.UsersCheckSession
 // mainRouter.AddRoute("GET", "/api/top-engaged-users", usersHandlers.GetTopEngagedUsersHandler)
 // mainRouter.AddRoute("GET", "/api/user/posts", postsHandlers.GetUserPostsHandler)
 
-// // Post routes
-// mainRouter.AddRoute("GET", "/api/posts", postsHandlers.GetAllPostsHandler)
-// mainRouter.AddRoute("POST", "/api/post", postsHandlers.CreatePostHandler)
-// mainRouter.AddRoute("POST", "/api/post/update", postsHandlers.UpdatePostHandler)
-// mainRouter.AddRoute("POST", "/api/post/delete", postsHandlers.DeletePostHandler)
-// mainRouter.AddRoute("GET", "/api/post/single", postsHandlers.GetSinglePostHandler)
 
 // // Group posts
 // mainRouter.AddRoute("POST", "/api/group/post", postsHandlers.CreateGroupPostHandler)

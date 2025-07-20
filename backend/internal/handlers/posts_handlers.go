@@ -23,6 +23,7 @@ func NewPostsHandlers(postSer *services.PostsService) *PostsHandlers {
 
 // CreatePostsHandler handles creating a new post
 func (postHand *PostsHandlers) CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
+	
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"message": "Invalid method"})
 		return

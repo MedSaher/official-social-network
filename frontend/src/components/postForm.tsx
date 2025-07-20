@@ -34,7 +34,7 @@ const data = new FormData()
     data.append('privacy', formData.privacy)
     if (formData.image) data.append('image', formData.image)
         try {
-    const response = await axios.post('http://localhost:8080/api/posts', data, {
+    const response = await axios.post('http://localhost:8080/api/post', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
