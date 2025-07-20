@@ -71,38 +71,12 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, expiresAt, err := h.sessionService.CreateSession(user.Id)
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create session"})
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    token,
-		Expires:  expiresAt,
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-	})
-
 	utils.ResponseJSON(w, http.StatusCreated, map[string]any{
 		"success": true,
-		"user": map[string]any{
-			"id":          user.Id,
-			"username":    user.UserName,
-			"nickname":    user.NickName,
-			"email":       user.Email,
-			"first_name":  user.FirstName,
-			"last_name":   user.LastName,
-			"gender":      user.Gender,
-			"dateOfBirth": user.DateOfBirth,
-			"about":       user.AboutMe,
-			"token":       token,
-			"expires_at":  expiresAt.Format(time.RFC3339),
-		},
+		"message": "User registered successfully. Please login.",
 	})
 }
-
+// ----------- Login -----------
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
@@ -146,6 +120,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// ----------- Logout -----------
 func (h *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
