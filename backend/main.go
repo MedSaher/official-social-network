@@ -4,44 +4,44 @@ import (
 	"log"
 	"net/http"
 
-	"social_network/internal/adapters/http/router"
+	"social_network/internal/adapters/db"
 	"social_network/internal/adapters/http/handlers"
+	"social_network/internal/adapters/router"
+	"social_network/internal/application/services"
 	"social_network/internal/infrastructure/db/sqlite"
-	"social_network/internal/infrastructure/db/repository"
-	"social_network/internal/application/service"
 )
 
 func main() {
 	dbPath := "./social_network/social_network.db"
 	migrationsPath := "./internal/infrastructure/db/migrations"
 
-	db, err := sqlite.ConnectDB(dbPath)
+	sqliteDB, err := sqlite.ConnectDB(dbPath)
 	if err != nil {
 		log.Fatal("DB connection error:", err)
 	}
 
-	if err := sqlite.RunMigrations(db, migrationsPath); err != nil {
+	if err := sqlite.RunMigrations(sqliteDB, migrationsPath); err != nil {
 		log.Fatal("Migration error:", err)
 	}
 
 	// Repositories
-	userRepo := repository.NewUserRepository(db)
-	sessionRepo := repository.NewSessionRepository(db)
+	userRepo := db.NewUserRepository(sqliteDB)
+	sessionRepo := db.NewSessionRepository(sqliteDB)
 
 	// Services
-	userService := service.NewUserService(userRepo)
-	sessionService := service.NewSessionService(sessionRepo)
+	userService := services.NewUserService(userRepo)
+	sessionService := services.NewSessionService(userRepo, sessionRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
 
 	// Router
-	r := router.NewRouter()
+	r := router.NewRouter(sessionService)
 
 	// Register routes
-	r.POST("/register", userHandler.Register)
-	r.POST("/login", userHandler.Login)
-	r.POST("/logout", userHandler.Logout)
+	r.AddRoute("POST", "/register", userHandler.Register)
+	r.AddRoute("POST", "/login", userHandler.Login)
+	r.AddRoute("POST", "/logout", userHandler.Logout)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")

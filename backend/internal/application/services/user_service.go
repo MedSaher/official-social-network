@@ -44,6 +44,6 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 	return user, nil
 }
 
-func (s *UserServiceImpl) GetUserID(id int) (*models.User, error) {
+func (s *UserServiceImpl) GetProfile(id int) (*models.User, error) {
 	return s.userRepo.GetUserByID(id)
 }
