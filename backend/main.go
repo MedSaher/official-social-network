@@ -66,7 +66,7 @@ func main() {
 	// Authentication routes
 	mainRouter.AddRoute("POST", "/api/login", usersHandlers.UsersLoginHandler)
 	mainRouter.AddRoute("POST", "/api/signup", usersHandlers.UsersRegistrationHandler)
-	// mainRouter.AddRoute("POST", "/api/logout", usersHandlers.UsersLogoutHandler)
+	mainRouter.AddRoute("POST", "/api/logout", usersHandlers.UsersLogoutHandler)
 	mainRouter.AddRoute("GET", "/api/check-session", usersHandlers.CheckSessionHandler)
 
 

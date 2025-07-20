@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 export default function HomePage() {
   const router = useRouter()
 
+  // 🔐 Check for active session
   useEffect(() => {
     fetch('http://localhost:8080/api/check-session', {
       method: 'GET',
-      credentials: 'include', // 🔥 This is CRUCIAL for cookies!
+      credentials: 'include', // send cookie!
     })
       .then((res) => {
         if (res.status !== 200) {
@@ -18,9 +19,19 @@ export default function HomePage() {
       .catch(() => router.push('/login'))
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('userId') // Optional if you're also storing it
-    router.push('/login')
+  // 🔓 Logout: clear session in DB + browser
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8080/api/logout', {
+        method: 'POST',
+        credentials: 'include', // includes session cookie
+      })
+
+      localStorage.removeItem('userId') // if you use it
+      router.push('/login')
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
   }
 
   return (
@@ -30,3 +41,4 @@ export default function HomePage() {
     </div>
   )
 }
+

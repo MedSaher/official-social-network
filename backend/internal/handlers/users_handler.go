@@ -116,7 +116,7 @@ fmt.Println()
 }
 
 
-func (userHandler *UsersHandlers) Logout(w http.ResponseWriter, r *http.Request) {
+func (userHandler *UsersHandlers) UsersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Read session_token from cookie
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
