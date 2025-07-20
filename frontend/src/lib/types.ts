@@ -6,6 +6,7 @@ export interface RegistrationFormData {
     dateOfBirth: string; // ISO format: YYYY-MM-DD
     avatar?: File | null;
     nickname?: string;
+    gender?: string;
     aboutMe?: string;
     privacyStatus: 'public' | 'private';
 }

@@ -82,11 +82,14 @@ const RegistrationForm = () => {
                 lastName: formData.lastName,
                 dateOfBirth: formData.dateOfBirth,
                 nickname: formData.nickname,
-                aboutMe: formData.aboutMe,
-                privacyStatus: formData.privacyStatus,
-                avatarUrl,
+                username: formData.nickname,         // ✅ REQUIRED
+                gender: formData.gender,             // ✅ REQUIRED
+                aboutMe: formData.aboutMe || null,   // optional
+                privacyStatus: formData.privacyStatus === 'public', // make sure it's boolean
+                avatarUrl: avatarUrl || null,        // optional
             };
-            const res = await axios.post('http://localhost:8080/api/register', registrationData, {
+
+            const res = await axios.post('http://localhost:8080/api/signup', registrationData, {
                 headers: { 'Content-Type': 'application/json' },
             })
             alert('Registration successful!');

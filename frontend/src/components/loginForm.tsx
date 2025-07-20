@@ -1,37 +1,40 @@
 'use client'
 
-import {useState} from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 
-import {useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
-export default function LoginForm(){
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-    const router = useRouter()
+export default function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
 
 const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try{
-        await axios.post('http://localhost:8080/login', {
-            email,
-            password
-        }, {
-            withCredentials: true // important to send and receive cookies:
-        })
-         router.push('/')
-    }catch (err) {
-      setError('Login failed: Invalid email or password')
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault()
+  setLoading(true)
+  setError('')
+  try {
+    const data = { email, password }
+    const response = await axios.post('http://localhost:8080/api/login', data, { withCredentials: true })
+    console.log('Login response:', response.data)
+
+    router.push('/')
+    console.log('router.push called')
+  } catch (err) {
+    console.error('Login failed:', err)
+    setError('Login failed: Invalid email or password')
+  } finally {
+    setLoading(false)
+  }
 }
+
+
+
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-md shadow-md">
+    <div className="max-w-md mx-auto p-6 border rounded-md shadow-md bg-white">
       <h2 className="text-2xl mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
         <input
