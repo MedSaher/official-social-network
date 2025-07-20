@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 
 	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/repository"
@@ -41,8 +42,9 @@ func (r *userRepositoryImpl) RegisterNewUser(user *models.User) error {
 }
 
 func (r *userRepositoryImpl) GetUserByID(id int) (*models.User, error) {
+		fmt.Println(" user by ID:", id)
 	query := `
-		SELECT id, nickname, username, date_of_birth, gender, password_hash,
+		SELECT id, nick_name, user_name, date_of_birth, gender, password_hash,
 		       email, first_name, last_name, avatar_path, about_me, is_public, created_at
 		FROM users WHERE id = ?
 	`
@@ -50,6 +52,7 @@ func (r *userRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 	err := r.db.QueryRow(query, id).Scan(
 		&user.Id,
 		&user.NickName,
+		&user.UserName,
 		&user.DateOfBirth,
 		&user.Gender,
 		&user.Password,
@@ -61,6 +64,8 @@ func (r *userRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 		&user.IsPublic,
 		&user.CreatedAt,
 	)
+		fmt.Println("Fetching user by ID:", user.Id)
+
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +74,7 @@ func (r *userRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 
 func (r *userRepositoryImpl) GetUserByEmail(email string) (*models.User, error) {
 	query := `
-		SELECT id, nickname, username, date_of_birth, gender, password_hash,
+		SELECT id, nick_name, user_name, date_of_birth, gender, password_hash,
 		       email, first_name, last_name, avatar_path, about_me, is_public, created_at
 		FROM users WHERE email = ?
 	`

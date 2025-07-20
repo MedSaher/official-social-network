@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -87,7 +88,6 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-
 	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
 		return
@@ -98,18 +98,16 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Authentication failed"})
 		return
 	}
-
 	token, expiresAt, err := h.sessionService.CreateSession(user.Id)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create session"})
 		return
 	}
-
+	fmt.Printf("token: %s, expiresAt: %s\n", token, expiresAt)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    token,
 		Expires:  expiresAt,
-		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
 
