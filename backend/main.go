@@ -39,7 +39,7 @@ func main() {
 	r := router.NewRouter(sessionService)
 
 	// Register routes
-	r.AddRoute("POST", "/register", userHandler.Register)
+	r.AddRoute("POST", "/api/register", userHandler.Register)
 	r.AddRoute("POST", "/login", userHandler.Login)
 	r.AddRoute("POST", "/logout", userHandler.Logout)
 

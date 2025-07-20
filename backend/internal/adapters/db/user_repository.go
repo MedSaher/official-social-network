@@ -18,7 +18,7 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 func (r *userRepositoryImpl) RegisterNewUser(user *models.User) error {
 	query := `
 		INSERT INTO users (
-			nick_name, user_name, date_of_birth, gender, password,
+			nick_name, user_name, date_of_birth, gender, password_hash,
 			email, first_name, last_name, avatar_path, about_me, is_public
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
