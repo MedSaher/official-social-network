@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
-import LoginForm from '../../components/loginForm'
 import { useRouter } from 'next/navigation'
+import PostForm from '@/components/postForm'
 
 export default function CreatePost() {
   const router = useRouter()
@@ -12,9 +12,9 @@ export default function CreatePost() {
       credentials: 'include',
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status !== 200) {
           // ✅ User is already logged in — redirect to home
-          router.push('/')
+          router.push('/login')
         }
       })
       .catch(() => {
@@ -26,7 +26,7 @@ export default function CreatePost() {
 
   return (
     <main>
-      <LoginForm />
+      <PostForm />
     </main>
   )
 }

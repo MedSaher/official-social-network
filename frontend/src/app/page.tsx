@@ -1,37 +1,48 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  
 
-  // 🔐 Check for active session
   useEffect(() => {
-    fetch('http://localhost:8080/api/check-session', {
-      method: 'GET',
-      credentials: 'include', // send cookie!
-    })
-      .then((res) => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/check-session', {
+          method: 'GET',
+          credentials: 'include',
+        })
+
         if (res.status !== 200) {
           router.push('/login')
+        } else {
+          setIsLoading(false)
         }
-      })
-      .catch(() => router.push('/login'))
+      } catch (err) {
+        router.push('/login')
+      }
+    }
+
+    checkSession()
   }, [])
 
-  // 🔓 Logout: clear session in DB + browser
   const handleLogout = async () => {
     try {
       await fetch('http://localhost:8080/api/logout', {
         method: 'POST',
-        credentials: 'include', // includes session cookie
+        credentials: 'include',
       })
-
-      localStorage.removeItem('userId') // if you use it
+      localStorage.removeItem('userId')
       router.push('/login')
     } catch (err) {
       console.error('Logout failed:', err)
     }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -41,4 +52,3 @@ export default function HomePage() {
     </div>
   )
 }
-
