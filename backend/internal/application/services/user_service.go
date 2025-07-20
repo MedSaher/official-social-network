@@ -2,27 +2,48 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
+	"social_network/internal/application/utils"
 	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/repository"
-	"social_network/internal/domain/ports/service"
 )
 
-type userServiceImpl struct {
-	repo repository.UserRepository
+type UserServiceImpl struct {
+	userRepo repository.UserRepository
 }
 
-func NewUserService(repo repository.UserRepository) service.UserService {
-	return &userServiceImpl{repo: repo}
+func NewUserService(userRepo repository.UserRepository) *UserServiceImpl {
+	return &UserServiceImpl{userRepo: userRepo}
 }
 
-func (s *userServiceImpl) Register(user *models.User) error {
-	if user.Email == "" || user.Password == "" {
-		return errors.New("missing credentials")
+func (s *UserServiceImpl) Register(user *models.User) error {
+	fmt.Println("User to register:", user)
+
+	hashedPassword, err := utils.HashPassword(user.PasswordHash)
+	if err != nil {
+		return err
 	}
-	return s.repo.RegisterNewUser(user)
+
+	user.Nickname = string(user.LastName[0]) + user.FirstName
+	user.PasswordHash = hashedPassword
+
+	return s.userRepo.RegisterNewUser(user)
 }
 
-func (s *userServiceImpl) GetByUsername(username string) (*models.User, error) {
-	return s.repo.GetUserByUsername(username)
+func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, error) {
+	if email == "" || password == "" {
+		return nil, errors.New("email and password required")
+	}
+
+	user, err := s.userRepo.GetUserByEmail(email)
+	if err != nil || !utils.CheckPasswordHash(password, user.PasswordHash) {
+		return nil, errors.New("invalid credentials")
+	}
+
+	return user, nil
+}
+
+func (s *UserServiceImpl) GetProfile(id int) (*models.User, error) {
+	return s.userRepo.GetUserByID(id)
 }
