@@ -1,8 +1,7 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  // No need for 'experimental.appDir': App Router is default now
-}
+  /* config options here */
+};
 
-export default nextConfig
+export default nextConfig;

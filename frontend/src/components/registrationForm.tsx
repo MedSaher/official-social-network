@@ -104,83 +104,120 @@ const RegistrationForm = () => {
 
     // return the componet to display on the browser:
     return (
-        <form onSubmit={handleSubmit}>
-            {/* Inputs as before */}
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 border rounded-md shadow-md bg-white">
+            {/* Email */}
             <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
             />
-            {errors.email && <span>{errors.email}</span>}
+            {errors.email && <span className="text-red-600 text-sm mb-2 block">{errors.email}</span>}
 
+            {/* Password */}
             <input
                 type="password"
                 name="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
             />
-            {errors.password && <span>{errors.password}</span>}
+            {errors.password && <span className="text-red-600 text-sm mb-2 block">{errors.password}</span>}
 
+            {/* First Name */}
             <input
                 type="text"
                 name="firstName"
                 placeholder="First Name"
                 value={formData.firstName}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
             />
-            {errors.firstName && <span>{errors.firstName}</span>}
+            {errors.firstName && <span className="text-red-600 text-sm mb-2 block">{errors.firstName}</span>}
 
+            {/* Last Name */}
             <input
                 type="text"
                 name="lastName"
                 placeholder="Last Name"
                 value={formData.lastName}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
             />
-            {errors.lastName && <span>{errors.lastName}</span>}
+            {errors.lastName && <span className="text-red-600 text-sm mb-2 block">{errors.lastName}</span>}
 
+            {/* Date of Birth */}
             <input
                 type="date"
                 name="dateOfBirth"
                 value={formData.dateOfBirth}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
             />
-            {errors.dateOfBirth && <span>{errors.dateOfBirth}</span>}
+            {errors.dateOfBirth && <span className="text-red-600 text-sm mb-2 block">{errors.dateOfBirth}</span>}
 
-            <input type="file" name="avatar" accept="image/*" onChange={handleChange} />
+            {/* Avatar */}
+            <input
+                type="file"
+                name="avatar"
+                accept="image/*"
+                onChange={handleChange}
+                className="w-full mb-4"
+            />
 
+            {/* Nickname */}
             <input
                 type="text"
                 name="nickname"
                 placeholder="Nickname (optional)"
                 value={formData.nickname}
                 onChange={handleChange}
+                className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
+            {/* About Me */}
             <textarea
                 name="aboutMe"
                 placeholder="About Me (optional)"
                 value={formData.aboutMe}
                 onChange={handleChange}
+                className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows={4}
             />
 
-            <label>Profile Privacy:</label>
+            {/* Privacy Status */}
+            <label className="block mb-1 font-semibold text-gray-700">Profile Privacy:</label>
             <select
                 name="privacyStatus"
                 value={formData.privacyStatus}
                 onChange={handleChange}
+                className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 <option value="public">Public</option>
                 <option value="private">Private</option>
             </select>
 
-            <button type="submit" disabled={loading}>
+            {/* Submit Button */}
+            <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            >
                 {loading ? 'Submitting...' : 'Register'}
             </button>
+            <p className="mt-4">
+                You have an account? <a href="/login" className="text-blue-600 underline">Login</a>
+            </p>
         </form>
+
     )
 
 }
