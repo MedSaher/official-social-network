@@ -21,6 +21,7 @@ func NewUserHandler(userSvc service.UserService, sessionSvc service.SessionServi
 		sessionService: sessionSvc,
 	}
 }
+
 // Helper function to convert string to pointer
 func stringPtr(s string) *string {
 	if s == "" {
@@ -28,6 +29,7 @@ func stringPtr(s string) *string {
 	}
 	return &s
 }
+
 // ----------- Register -----------
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -99,4 +101,80 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 			"expires_at":  expiresAt.Format(time.RFC3339),
 		},
 	})
+}
+
+func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	var cred struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
+		return
+	}
+
+	user, err := h.userService.Authenticate(cred.Email, cred.Password)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Authentication failed"})
+		return
+	}
+
+	token, expiresAt, err := h.sessionService.CreateSession(user.Id)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create session"})
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    token,
+		Expires:  expiresAt,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]any{
+		"user_id":   user.Id,
+		"token":     token,
+		"expiresAt": expiresAt.Format(time.RFC3339),
+	})
+}
+
+func (h *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "invalid session"})
+		return
+	}
+	token := cookie.Value
+
+	// Solution 1 : ignorer userId si tu t'en sers pas
+	_, err = h.sessionService.GetUserIdFromSession(token)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "session not found"})
+		return
+	}
+
+	err = h.sessionService.DestroySession(token)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to destroy session"})
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	})
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "User logged out successfully"})
 }
