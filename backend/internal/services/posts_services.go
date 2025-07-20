@@ -9,21 +9,20 @@ import (
 	"social_network/internal/repositories"
 )
 
-// Create an interface for the posts services:
+// PostsServiceLayer defines the interface for post-related business logic
 type PostsServiceLayer interface {
 	CreatePost(post *models.PostUser, token string) error
-	GetAllPostsService(offset, limit int) ([]*models.PostUser, error) 
+	GetAllPostsService(offset, limit int) ([]*models.PostUser, error)
 	GetAllCategoriesService() ([]*models.Categories, error)
 }
 
-// Create a structure to implement the functionalities
-// within our interface contract:
+// PostsService implements PostsServiceLayer
 type PostsService struct {
 	PostRepo    repositories.PostsRepositoryLayer
 	SessionRepo repositories.SessionsRepositoryLayer
 }
 
-// Instantiate a new postService instance:
+// NewPostService returns a new PostsService instance
 func NewPostService(postRepo *repositories.PostsRepository, sessRepo *repositories.SessionsRepository) *PostsService {
 	return &PostsService{
 		PostRepo:    postRepo,
@@ -31,26 +30,30 @@ func NewPostService(postRepo *repositories.PostsRepository, sessRepo *repositori
 	}
 }
 
-// Create a new post server:
+// CreatePost validates input, attaches user ID, sets time, and creates the post
 func (postSer *PostsService) CreatePost(post *models.PostUser, token string) error {
-	var err error
 	if post.Title == "" || post.Content == "" {
-		return errors.New("missing content or title")
+		return errors.New("missing title or content")
 	}
+
 	post.CreatedAt = time.Now().UTC().Format("2006-01-02 15:04:05")
-	post.UserId, err = postSer.SessionRepo.GetSessionByToken(token)
-	if err != nil || post.UserId == 0{
+
+	userID, err := postSer.SessionRepo.GetSessionByToken(token)
+	if err != nil || userID == 0 {
 		if err != nil {
-				fmt.Printf("error retreiving user id ->----------->: %v", err)
+			fmt.Printf("error retrieving user id from session: %v\n", err)
 			return err
 		}
-		fmt.Printf("error retreiving user id.")
-		return  errors.New("error retreiving user id.")
+		fmt.Println("user id is 0 — invalid session?")
+		return errors.New("unable to retrieve user from session")
 	}
+
+	post.UserId = userID
+
 	return postSer.PostRepo.CreatePost(post)
 }
 
-// Get all posts service:
+// GetAllPostsService fetches posts and formats created_at time to RFC3339
 func (postSer *PostsService) GetAllPostsService(offset, limit int) ([]*models.PostUser, error) {
 	posts, err := postSer.PostRepo.GetAllPostsRepository(offset, limit)
 	if err != nil {
@@ -58,20 +61,15 @@ func (postSer *PostsService) GetAllPostsService(offset, limit int) ([]*models.Po
 	}
 
 	for _, post := range posts {
-		parsedTime, err := time.Parse("2006-01-02 15:04:05", post.CreatedAt)
-		if err == nil {
-			post.CreatedAt = parsedTime.Format(time.RFC3339)
+		if parsedTime, err := time.Parse("2006-01-02 15:04:05", post.CreatedAt); err == nil {
+			post.CreatedAt = parsedTime.UTC().Format(time.RFC3339)
 		}
 	}
+
 	return posts, nil
 }
 
-
-// Get all categories service:
+// GetAllCategoriesService returns all categories
 func (postSer *PostsService) GetAllCategoriesService() ([]*models.Categories, error) {
-	categ, err := postSer.PostRepo.GetCategories()
-	if err != nil {
-		return nil, err
-	}
-	return categ, nil
+	return postSer.PostRepo.GetCategories()
 }

@@ -1,6 +1,6 @@
 'use client';
 import { useState } from "react";
-import { RegistrationFormData } from '../lib/types'
+import { RegistrationFormData } from '../types/user'
 import axios from 'axios'
 
 const RegistrationForm = () => {

@@ -19,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <a href="/" className="text-green-800 hover:text-green-600 font-semibold">Home</a>
           <a href="/login" className="text-green-800 hover:text-green-600 font-semibold">Login</a>
           <a href="/register" className="text-green-800 hover:text-green-600 font-semibold">Register</a>
+          <a href="/post" className="text-green-800 hover:text-green-600 font-semibold">Create post</a>
         </nav>
         <hr className="w-full border-green-300" />
         <main className="flex-grow w-full max-w-3xl p-6">
