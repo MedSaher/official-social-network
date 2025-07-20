@@ -40,6 +40,7 @@ func main() {
 
 	// Register routes
 	r.AddRoute("POST", "/api/register", userHandler.Register)
+	r.AddRoute("POST", "/api/profile", userHandler.Profile)
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 
