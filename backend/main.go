@@ -40,8 +40,8 @@ func main() {
 
 	// Register routes
 	r.AddRoute("POST", "/api/register", userHandler.Register)
-	r.AddRoute("POST", "/login", userHandler.Login)
-	r.AddRoute("POST", "/logout", userHandler.Logout)
+	r.AddRoute("POST", "/api/login", userHandler.Login)
+	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
