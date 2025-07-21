@@ -34,13 +34,14 @@ func main() {
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
+	profileHandler := handlers.NewProfileHandler(userService, sessionService)
 
 	// Router
 	r := router.NewRouter(sessionService)
 
 	// Register routes
 	r.AddRoute("POST", "/api/register", userHandler.Register)
-	r.AddRoute("POST", "/api/profile", userHandler.Profile)
+	r.AddPrefixRoute("POST", "/api/profile/", profileHandler.Profile)
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 

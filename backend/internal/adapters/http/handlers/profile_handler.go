@@ -2,24 +2,28 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
+	"social_network/internal/domain/models"
+	"social_network/internal/domain/ports/service"
 	"strings"
 )
 
-type Profile struct {
-	ID          string `json:"id"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Nickname    string `json:"nickname"`
-	Avatar      string `json:"avatar"`
-	AboutMe     string `json:"aboutMe"`
-	IsPrivate   bool   `json:"isPrivate"`
-	IsOwnProfile bool  `json:"isOwnProfile"`
-	IsFollowing bool   `json:"isFollowing"`
+type ProfileHandler struct {
+	profileService service.ProfileService
+	sessionService service.SessionService
 }
 
-func (p *Profile) Profile(w http.ResponseWriter, r *http.Request) {
+
+
+func NewProfileHandler(profileSvc service.ProfileService, sessionSvc service.SessionService) *ProfileHandler {
+	return &ProfileHandler{
+		profileService: profileSvc,
+		sessionService: sessionSvc,
+	}
+}
+
+func (p *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path // Example: /api/profile/123
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
@@ -28,26 +32,21 @@ func (p *Profile) Profile(w http.ResponseWriter, r *http.Request) {
 	}
 	id := parts[3] // Extract ID
 
+	fmt.Println(id)
+
 	// Fake data (simulate DB fetch)
-	profile := Profile{
-		ID:          id,
-		FirstName:   "Saher",
-		LastName:    "Mohamed",
-		Nickname:    "saher_dev",
-		Avatar:      "https://i.pravatar.cc/150?img=5",
-		AboutMe:     "Go programmer and cybersecurity enthusiast",
-		IsPrivate:   false,
+	profile := models.Profile{
+		ID:           id,
+		FirstName:    "Saher",
+		LastName:     "Mohamed",
+		Nickname:     "saher_dev",
+		Avatar:       "https://i.pravatar.cc/150?img=5",
+		AboutMe:      "Go programmer and cybersecurity enthusiast",
+		IsPrivate:    false,
 		IsOwnProfile: false,
-		IsFollowing: true,
+		IsFollowing:  true,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(profile)
-}
-
-func main() {
-	http.HandleFunc("/api/profile/", getProfileHandler)
-
-	log.Println("Server running at http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
 }

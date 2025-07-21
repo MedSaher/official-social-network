@@ -15,6 +15,8 @@ type UserHandler struct {
 	sessionService service.SessionService
 }
 
+
+
 func NewUserHandler(userSvc service.UserService, sessionSvc service.SessionService) *UserHandler {
 	return &UserHandler{
 		userService:    userSvc,
