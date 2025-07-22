@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ----------- Configuration -----------
-API_URL="http://localhost:8080/api/login"  # تأكد من /api/ إذا مستعمل
+API_URL="http://localhost:8080/api/login"
 EMAIL="mossab@example.com"
 PASSWORD="strongpassword123"
 
