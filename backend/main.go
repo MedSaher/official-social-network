@@ -27,21 +27,27 @@ func main() {
 	// Repositories
 	userRepo := db.NewUserRepository(sqliteDB)
 	sessionRepo := db.NewSessionRepository(sqliteDB)
+	followRepo := db.NewFollowRepository(sqliteDB)
 
 	// Services
 	userService := services.NewUserService(userRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
+	followService := services.NewFollowService(followRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
+	followHandler := handlers.NewFollowHandler(followService, sessionService)
 
 	// Router
 	r := router.NewRouter(sessionService)
 
-	// Register routes
+	// auth routes
 	r.AddRoute("POST", "/api/register", userHandler.Register)
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
+
+	// Follow routes
+	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
