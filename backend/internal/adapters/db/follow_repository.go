@@ -7,15 +7,15 @@ import (
 	"social_network/internal/domain/ports/repository"
 )
 
-type followRepositoryImpl struct {
+type FollowRepositoryImpl struct {
 	db *sql.DB
 }
 
 func NewFollowRepository(db *sql.DB) repository.FollowRepository {
-	return &followRepositoryImpl{db: db}
+	return &FollowRepositoryImpl{db: db}
 }
 
-func (r *followRepositoryImpl) CreateFollow(follow *models.Follow) error {
+func (r *FollowRepositoryImpl) CreateFollow(follow *models.Follow) error {
 	query := `
 		INSERT INTO follows (follower_id, following_id, status)
 		VALUES (?, ?, ?)
