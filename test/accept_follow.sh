@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# Test script for accepting a follow request
+API_URL="http://localhost:8080/api/follow/accept"
 
-# Helper function to send POST requests
-send_post_request() {
-    local url=$1
-    local data=$2
-    curl -X POST -H "Content-Type: application/json" -d "$data" "$url"
-}
+#must session to be user 2
+if [ ! -f session_token.txt ]; then
+  echo "Error: session_token.txt not found"
+  exit 1
+fi
 
-# Test case: Accept a follow request successfully
-echo "Test Case 1: Accept Follow Request"
-response=$(send_post_request "http://localhost:8080/follow/accept" '{"follower_id": 1, "following_id": 2}')
+TOKEN=$(cat session_token.txt | tr -d '[:space:]')
+
+FOLLOWER_ID=1
+FOLLOWING_ID=2
+
+response=$(curl -s -X POST "$API_URL" \
+  -H "Content-Type: application/json" \
+  -b "session_token=$TOKEN" \
+  -d '{"follower_id": '"$FOLLOWER_ID"', "following_id": '"$FOLLOWING_ID"'}'
+)
+
 echo "Response: $response"
