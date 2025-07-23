@@ -91,4 +91,35 @@ func (h *FollowHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *FollowHandler) DeclineFollow(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
 
+	var payload struct {
+		FollowerID  int `json:"follower_id"`
+		FollowingID int `json:"following_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
+		return
+	}
+
+	currentUserID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
+		return
+	}
+
+	if err := h.followService.DeclineFollow(payload.FollowerID, payload.FollowingID, currentUserID); err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]any{
+		"success": true,
+		"message": "Follow request declined successfully.",
+	})
+}
