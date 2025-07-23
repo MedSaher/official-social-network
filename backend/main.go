@@ -48,7 +48,8 @@ func main() {
 
 	// Follow routes
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)
-
+	r.AddRoute("POST", "/api/follow/accept", followHandler.AcceptFollow)
+	
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", r)
