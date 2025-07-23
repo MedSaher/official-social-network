@@ -39,3 +39,21 @@ func (s *FollowServiceImpl) CreateFollow(follow *models.Follow) error {
 
 	return s.followRepo.CreateFollow(follow)
 }
+
+func (s *FollowServiceImpl) AcceptFollow(followerID, followingID, currentUserID int) error {
+	if followerID == 0 || followingID == 0 {
+		return errors.New("follower and following IDs must be provided")
+	}
+
+	//check if the follower and following IDs are not the same
+	if followerID == followingID {
+		return errors.New("you cannot accept a follow request from yourself")
+	}
+
+	// check if the current user is the one who sent the follow request
+	if currentUserID != followingID {
+		return errors.New("you are not authorized to accept this follow request")
+	}
+
+	return s.followRepo.AcceptFollow(followerID, followingID)
+}
