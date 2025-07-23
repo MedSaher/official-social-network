@@ -10,13 +10,18 @@ import (
 
 type FollowServiceImpl struct {
 	followRepo repository.FollowRepository
-	userRepo repository.UserRepository
+	userRepo   repository.UserRepository
 }
 
-func NewFollowService(followRepo repository.FollowRepository) *FollowServiceImpl {
-	return &FollowServiceImpl{followRepo: followRepo}
+func NewFollowService(
+	followRepo repository.FollowRepository,
+	userRepo repository.UserRepository,
+) *FollowServiceImpl {
+	return &FollowServiceImpl{
+		followRepo: followRepo,
+		userRepo:   userRepo,
+	}
 }
-
 func (s *FollowServiceImpl) CreateFollow(follow *models.Follow) error {
 	if follow.FollowerID == 0 || follow.FollowingID == 0 {
 		return errors.New("follower and following IDs must be provided")

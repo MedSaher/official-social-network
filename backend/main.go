@@ -32,7 +32,7 @@ func main() {
 	// Services
 	userService := services.NewUserService(userRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
-	followService := services.NewFollowService(followRepo)
+	followService := services.NewFollowService(followRepo,userRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
