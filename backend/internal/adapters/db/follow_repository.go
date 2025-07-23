@@ -52,3 +52,27 @@ func (r *FollowRepositoryImpl) AcceptFollow(followerID, followingID int) error {
 
 	return nil
 }
+
+func (r *FollowRepositoryImpl) DeclineFollow(followerID, followingID int) error {
+	query := `
+		UPDATE follows
+		SET status = 'declined'
+		WHERE follower_id = ? AND following_id = ? AND status = 'pending'
+	`
+
+	result, err := r.db.Exec(query, followerID, followingID)
+	if err != nil {
+		return fmt.Errorf("error declining follow request: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error checking rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no pending follow request found for follower ID %d and following ID %d", followerID, followingID)
+	}
+
+	return nil
+}
