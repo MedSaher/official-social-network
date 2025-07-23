@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_name TEXT NOT NULL,
     avatar_path TEXT,
     about_me TEXT,
-    is_public INT DEFAULT 1,
+    is_public INTEGER NOT NULL DEFAULT 1 CHECK(is_public IN (0, 1)),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
