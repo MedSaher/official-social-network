@@ -4,7 +4,7 @@ import "social_network/internal/domain/models"
 
 type FollowRepository interface {
 	CreateFollow(follow *models.Follow) error
-	// Accept(followerID, followingID int) error
+	AcceptFollow(followerID, followingID int) error
 	// Decline(followerID, followingID int) error
 	// Delete(followerID, followingID int) error
 	// GetStatus(followerID, followingID int) (string, error)
