@@ -12,6 +12,6 @@ type User struct {
 	LastName    string  `json:"lastName"`
 	AvatarPath  *string `json:"avatarUrl"` // nullable
 	AboutMe     *string `json:"aboutMe"`   // nullable
-	IsPublic    bool    `json:"privacyStatus"`
+	IsPublic    bool    `json:"is_public"`
 	CreatedAt   string  `json:"createdAt"` // optional, for info
 }
