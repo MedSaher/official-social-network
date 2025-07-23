@@ -7,7 +7,3 @@ type UserService interface {
 	Authenticate(email, password string) (*models.User, error)
 	GetProfile(id int) (*models.User, error)
 }
-
-type ProfileService interface {
-	
-}

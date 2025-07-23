@@ -1,4 +1,4 @@
-import ProfileHeader from './components/ProfileHeader'
+import ProfileHeader from '../components/ProfileHeader'
 
 interface Profile {
   id: string
@@ -15,9 +15,12 @@ interface Profile {
 async function getProfile(id: string): Promise<Profile> {
   const res = await fetch(`http://localhost:8080/api/profile/${id}`, {
     cache: 'no-store',
+    method: "POST",
   })
 
   if (!res.ok) {
+    console.log(res.status);
+    
     throw new Error('Failed to fetch profile')
   }
 
@@ -29,6 +32,8 @@ export default async function ProfilePage({
 }: {
   params: { id: string }
 }) {
+  console.log("id is : ", params.id);
+  
   const profile = await getProfile(params.id)
 
   return (

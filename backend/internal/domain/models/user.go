@@ -15,15 +15,3 @@ type User struct {
 	IsPublic    bool    `json:"privacyStatus"`
 	CreatedAt   string  `json:"createdAt"` // optional, for info
 }
-
-type Profile struct {
-	ID           string `json:"id"`
-	FirstName    string `json:"firstName"`
-	LastName     string `json:"lastName"`
-	Nickname     string `json:"nickname"`
-	Avatar       string `json:"avatar"`
-	AboutMe      string `json:"aboutMe"`
-	IsPrivate    bool   `json:"isPrivate"`
-	IsOwnProfile bool   `json:"isOwnProfile"`
-	IsFollowing  bool   `json:"isFollowing"`
-}

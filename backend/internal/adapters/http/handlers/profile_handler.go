@@ -4,19 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"social_network/internal/domain/models"
+	"social_network/internal/adapters/http/utils"
 	"social_network/internal/domain/ports/service"
+	"strconv"
 	"strings"
 )
 
 type ProfileHandler struct {
-	profileService service.ProfileService
+	profileService service.UserService
 	sessionService service.SessionService
 }
 
-
-
-func NewProfileHandler(profileSvc service.ProfileService, sessionSvc service.SessionService) *ProfileHandler {
+func NewProfileHandler(profileSvc service.UserService, sessionSvc service.SessionService) *ProfileHandler {
 	return &ProfileHandler{
 		profileService: profileSvc,
 		sessionService: sessionSvc,
@@ -24,29 +23,27 @@ func NewProfileHandler(profileSvc service.ProfileService, sessionSvc service.Ses
 }
 
 func (p *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path // Example: /api/profile/123
+	fmt.Println("actived")
+	path := r.URL.Path
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	id := parts[3] // Extract ID
-
+	id := parts[3]
 	fmt.Println(id)
-
-	// Fake data (simulate DB fetch)
-	profile := models.Profile{
-		ID:           id,
-		FirstName:    "Saher",
-		LastName:     "Mohamed",
-		Nickname:     "saher_dev",
-		Avatar:       "https://i.pravatar.cc/150?img=5",
-		AboutMe:      "Go programmer and cybersecurity enthusiast",
-		IsPrivate:    false,
-		IsOwnProfile: false,
-		IsFollowing:  true,
+	userId, err := strconv.Atoi(id)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusNotFound, map[string]any{"error": "Page Not Found"})
+		return
 	}
 
+	// Fake data (simulate DB fetch)
+	profile, err := p.profileService.GetProfile(userId)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusNotFound, map[string]any{"error": "Page Not Found"})
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(profile)
 }

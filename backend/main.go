@@ -41,9 +41,9 @@ func main() {
 
 	// Register routes
 	r.AddRoute("POST", "/api/register", userHandler.Register)
-	r.AddPrefixRoute("POST", "/api/profile/", profileHandler.Profile)
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
+	r.AddPrefixRoute("POST", "/api/profile/", profileHandler.Profile)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")

@@ -35,12 +35,10 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 	if email == "" || password == "" {
 		return nil, errors.New("email and password required")
 	}
-
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil || !utils.CheckPasswordHash(password, user.Password) {
 		return nil, errors.New("invalid credentials")
 	}
-
 	return user, nil
 }
 

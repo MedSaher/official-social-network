@@ -21,17 +21,18 @@ func NewSessionService(userRepo repository.UserRepository, sessionRepo repositor
 }
 
 func (s *SessionServiceImpl) CreateSession(userID int) (string, time.Time, error) {
+	fmt.Println("Creating session for user ID:", userID)
 	// Vérifier si l'utilisateur existe
-	_, err := s.userRepo.GetUserByID(userID)
+	user_name, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("utilisateur introuvable: %w", err)
 	}
-
+	fmt.Println("User found:", user_name.UserName)
 	token, err := utils.GenerateRandomToken(32)
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("erreur token: %w", err)
 	}
-
+	fmt.Println("Generated token:", token)
 	// Expiration 24h
 	expiresAt := time.Now().Add(24 * time.Hour)
 
