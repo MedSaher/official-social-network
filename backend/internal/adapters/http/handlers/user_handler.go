@@ -49,6 +49,7 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Gender      string `json:"gender"`
 		DateOfBirth string `json:"dateOfBirth"`
 		AboutMe     string `json:"aboutMe"`
+		IsPublic    *bool  `json:"is_public"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -66,6 +67,12 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Gender:      payload.Gender,
 		DateOfBirth: payload.DateOfBirth,
 		AboutMe:     stringPtr(payload.AboutMe),
+		IsPublic: func() bool {
+			if payload.IsPublic != nil {
+				return *payload.IsPublic
+			}
+			return true // public par défaut
+		}(),
 	}
 
 	if err := h.userService.Register(user); err != nil {
