@@ -35,13 +35,8 @@ func (h *FollowHandler) CreateFollow(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
 		return
 	}
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
-		return
-	}
 
-	followerID, err := h.sessionService.GetUserIdFromSession(cookie.Value)
+	followerID, err := utils.GetCurrentUserID(r, h.sessionService)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
 		return
