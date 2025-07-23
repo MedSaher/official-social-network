@@ -10,6 +10,8 @@ import (
 	"social_network/internal/adapters/http/utils"
 	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/service"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -33,6 +35,7 @@ func stringPtr(s string) *string {
 }
 
 // ----------- Register -----------
+
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
@@ -40,16 +43,14 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-		NickName    string `json:"nickname"`
-		UserName    string `json:"username"`
-		Email       string `json:"email"`
-		Password    string `json:"password"`
-		FirstName   string `json:"firstName"`
-		LastName    string `json:"lastName"`
-		Gender      string `json:"gender"`
-		DateOfBirth string `json:"dateOfBirth"`
-		AboutMe     string `json:"aboutMe"`
-		IsPublic    *bool  `json:"is_public"`
+		Email         string `json:"email"`
+		Password      string `json:"password"`
+		FirstName     string `json:"firstName"`
+		LastName      string `json:"lastName"`
+		Gender        string `json:"gender"`
+		DateOfBirth   string `json:"dateOfBirth"`
+		AboutMe       string `json:"aboutMe"`
+		PrivacyStatus string `json:"privacyStatus"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -57,22 +58,46 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate required fields
+	if payload.Email == "" || payload.Password == "" || payload.FirstName == "" ||
+		payload.LastName == "" || payload.DateOfBirth == "" || payload.Gender == "" || payload.PrivacyStatus == "" {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Missing required fields"})
+		return
+	}
+
+	// Validate gender
+	if payload.Gender != "male" && payload.Gender != "female" {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid gender value"})
+		return
+	}
+
+	// Validate privacy status
+	validPrivacy := map[string]bool{
+		"public":         true,
+		"private":        true,
+		"almost_private": true,
+	}
+	if !validPrivacy[payload.PrivacyStatus] {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid privacy status"})
+		return
+	}
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to process password"})
+		return
+	}
+
 	user := &models.User{
-		NickName:    payload.NickName,
-		UserName:    payload.UserName,
-		Email:       payload.Email,
-		Password:    payload.Password,
-		FirstName:   payload.FirstName,
-		LastName:    payload.LastName,
-		Gender:      payload.Gender,
-		DateOfBirth: payload.DateOfBirth,
-		AboutMe:     stringPtr(payload.AboutMe),
-		IsPublic: func() bool {
-			if payload.IsPublic != nil {
-				return *payload.IsPublic
-			}
-			return true // public par défaut
-		}(),
+		Email:         payload.Email,
+		Password:      string(hashedPassword),
+		FirstName:     payload.FirstName,
+		LastName:      payload.LastName,
+		Gender:        payload.Gender,
+		DateOfBirth:   payload.DateOfBirth,
+		AboutMe:       stringPtr(payload.AboutMe),
+		PrivacyStatus: payload.PrivacyStatus,
 	}
 
 	if err := h.userService.Register(user); err != nil {
@@ -88,6 +113,7 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 // ----------- Login -----------
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("----------->")
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
 		return

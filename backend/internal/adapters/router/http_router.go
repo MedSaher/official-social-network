@@ -32,9 +32,12 @@ func (r *Router) AddRoute(method string, path string, handler http.HandlerFunc) 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// CORS
 	origin := req.Header.Get("Origin")
+
+	// IMPORTANT: don't set Allow-Origin to * when allowing credentials!
 	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if req.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)

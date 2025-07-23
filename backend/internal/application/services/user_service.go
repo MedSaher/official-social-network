@@ -25,7 +25,7 @@ func (s *UserServiceImpl) Register(user *models.User) error {
 		return err
 	}
 
-	user.NickName = string(user.LastName[0]) + user.FirstName
+	user.UserName = string(user.LastName[0]) + user.FirstName
 	user.Password = hashedPassword
 
 	return s.userRepo.RegisterNewUser(user)

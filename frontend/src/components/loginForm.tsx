@@ -17,7 +17,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true)
     setError('')
     try{
-        await axios.post('http://localhost:8080/login', {
+        await axios.post('http://localhost:8080/api/login', {
             email,
             password
         }, {

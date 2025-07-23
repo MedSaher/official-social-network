@@ -1,17 +1,15 @@
 package models
-
 type User struct {
-	Id          int     `json:"id"`
-	NickName    string  `json:"nickname"`
-	UserName    string  `json:"username"`
-	DateOfBirth string  `json:"dateOfBirth"` // use string or time.Time
-	Gender      string  `json:"gender"`
-	Password    string  `json:"password"` // stored hashed
-	Email       string  `json:"email"`
-	FirstName   string  `json:"firstName"`
-	LastName    string  `json:"lastName"`
-	AvatarPath  *string `json:"avatarUrl"` // nullable
-	AboutMe     *string `json:"aboutMe"`   // nullable
-	IsPublic    bool    `json:"is_public"`
-	CreatedAt   string  `json:"createdAt"` // optional, for info
+    Id            int
+    Email         string
+    Password      string   // hashed password
+    FirstName     string
+    LastName      string
+    DateOfBirth   string
+    AvatarPath    *string  // nullable avatar URL or path
+    UserName      string
+    AboutMe       *string  // nullable about me
+    PrivacyStatus string   // "public", "private", or "almost_private"
+    Gender        string   // "male" or "female"
+    CreatedAt     string   // ideally time.Time, but string for now
 }

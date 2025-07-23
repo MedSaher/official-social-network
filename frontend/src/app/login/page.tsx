@@ -4,10 +4,9 @@ import React from "react";
 import LoginForm from '../../components/loginForm'
 
 
-export default function RegisterPage() {
+export default function LoginPage() {
   return (
     <main>
-      <h1>Register</h1>
       <LoginForm />
     </main>
   );
