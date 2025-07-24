@@ -32,7 +32,7 @@ func main() {
 	// Services
 	userService := services.NewUserService(userRepo, followRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
-	followService := services.NewFollowService(followRepo,userRepo)
+	followService := services.NewFollowService(followRepo, userRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
@@ -46,7 +46,7 @@ func main() {
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 	r.AddRoute("GET", "/api/check-session", userHandler.CheckSession)
-	r.AddRoute("GET", "/api/profile", userHandler.GetProfile)
+	r.AddRoute("GET", "/api/profile", userHandler.GetFullProfile)
 
 	// Follow routes
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)
@@ -57,8 +57,7 @@ func main() {
 	r.AddRoute("GET", "/api/follow/followers", followHandler.GetFollowers)
 	r.AddRoute("GET", "/api/follow/following", followHandler.GetFollowing)
 
-	
-	// Start server 
+	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", r)
 }
