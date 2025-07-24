@@ -92,3 +92,27 @@ func (s *FollowServiceImpl) DeleteFollow(followerID, followingID, currentUserID 
 
 	return s.followRepo.DeleteFollow(followerID, followingID)
 }
+
+func (s *FollowServiceImpl) GetStatusFollow(followerID, followingID int) (string, error) {
+	if followerID == 0 || followingID == 0 {
+		return "", errors.New("follower and following IDs must be provided")
+	}
+
+	return s.followRepo.GetStatusFollow(followerID, followingID)
+}
+
+func (s *FollowServiceImpl) GetFollowers(userID int) ([]models.FollowerInfo, error) {
+	if userID == 0 {
+		return nil, errors.New("user ID must be provided")
+	}
+
+	return s.followRepo.GetFollowers(userID)
+}
+
+func (s *FollowServiceImpl) GetFollowing(userID int) ([]models.FollowerInfo, error) {
+	if userID == 0 {
+		return nil, errors.New("user ID must be provided")
+	}
+
+	return s.followRepo.GetFollowing(userID)
+}

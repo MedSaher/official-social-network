@@ -22,7 +22,7 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchFullUserData() {
       try {
-        const res = await fetch('/api/getFullUserData', { credentials: 'include' });
+        const res = await fetch('/api/profile', { credentials: 'include' });
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
