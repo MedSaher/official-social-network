@@ -10,11 +10,12 @@ import (
 )
 
 type UserServiceImpl struct {
-	userRepo repository.UserRepository
+	userRepo   repository.UserRepository
+	followRepo repository.FollowRepository
 }
 
-func NewUserService(userRepo repository.UserRepository) *UserServiceImpl {
-	return &UserServiceImpl{userRepo: userRepo}
+func NewUserService(userRepo repository.UserRepository, followRepo repository.FollowRepository) *UserServiceImpl {
+	return &UserServiceImpl{userRepo: userRepo, followRepo: followRepo}
 }
 
 func (s *UserServiceImpl) Register(user *models.User) error {
@@ -36,15 +37,11 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 		return nil, errors.New("email and password required")
 	}
 
-
 	user, err := s.userRepo.GetUserByEmail(email)
 
-
-	
 	if err != nil || !utils.CheckPasswordHash(password, user.Password) {
 		return nil, errors.New("invalid credentials")
 	}
-	
 
 	return user, nil
 }
@@ -52,3 +49,32 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 func (s *UserServiceImpl) GetProfile(id int) (*models.User, error) {
 	return s.userRepo.GetUserByID(id)
 }
+
+func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileResponse, error) {
+	user, err := s.userRepo.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	followers, err := s.followRepo.GetFollowers(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	following, err := s.followRepo.GetFollowing(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	userDTO := models.UserProfileDTOFromUser(user)
+
+	resp := &models.FullProfileResponse{
+		User:           userDTO, // convert User to UserProfileDTO
+		FollowersCount: len(followers),
+		FollowingCount: len(following),
+		Followers:      followers,
+		Following:      following,
+	}
+	return resp, nil
+}
+

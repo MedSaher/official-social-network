@@ -176,3 +176,24 @@ func (h *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "User has a valid session"})
 }
+
+func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
+		return
+	}
+
+	user, err := h.userService.GetFullProfile(userID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to get user profile"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, user)
+}

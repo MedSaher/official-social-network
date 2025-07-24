@@ -30,7 +30,7 @@ func main() {
 	followRepo := db.NewFollowRepository(sqliteDB)
 
 	// Services
-	userService := services.NewUserService(userRepo)
+	userService := services.NewUserService(userRepo, followRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
 	followService := services.NewFollowService(followRepo,userRepo)
 
@@ -46,6 +46,7 @@ func main() {
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 	r.AddRoute("GET", "/api/check-session", userHandler.CheckSession)
+	
 
 	// Follow routes
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)

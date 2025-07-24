@@ -28,3 +28,18 @@ type UserProfileDTO struct {
 	Gender        string  `json:"gender"`
 	CreatedAt     string  `json:"createdAt"`
 }
+
+func UserProfileDTOFromUser(u *User) UserProfileDTO {
+	return UserProfileDTO{
+		Id:            u.Id,
+		UserName:      u.UserName,
+		FirstName:     u.FirstName,
+		LastName:      u.LastName,
+		AvatarUrl:     u.AvatarPath,
+		Email:         u.Email,
+		AboutMe:       u.AboutMe,
+		PrivacyStatus: u.PrivacyStatus,
+		Gender:        u.Gender,
+		CreatedAt:     u.CreatedAt,
+	}
+}

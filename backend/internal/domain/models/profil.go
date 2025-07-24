@@ -7,3 +7,5 @@ type FullProfileResponse struct {
 	Followers      []FollowerInfo `json:"followers"`
 	Following      []FollowerInfo `json:"following"`
 }
+
+
