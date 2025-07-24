@@ -74,3 +74,21 @@ func (s *FollowServiceImpl) DeclineFollow(followerID, followingID, currentUserID
 
 	return s.followRepo.DeclineFollow(followerID, followingID)
 }
+
+func (s *FollowServiceImpl) DeleteFollow(followerID, followingID, currentUserID int) error {
+	if followerID == 0 || followingID == 0 {
+		return errors.New("follower and following IDs must be provided")
+	}
+
+	// check if the follower and following IDs are not the same
+	if followerID == followingID {
+		return errors.New("you cannot delete a follow relationship with yourself")
+	}
+
+	// check if the current user is the one who sent the follow request
+	if currentUserID != followerID && currentUserID != followingID {
+		return errors.New("you are not authorized to delete this follow relationship")
+	}
+
+	return s.followRepo.DeleteFollow(followerID, followingID)
+}
