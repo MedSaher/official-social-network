@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { RegistrationFormData } from '../lib/types';
 import axios from 'axios';
+import './component.css/RegistrationForm.css'; // 👈 Import the CSS file
 
 const RegistrationForm = () => {
     const [formData, setFormData] = useState<RegistrationFormData>({
@@ -14,7 +15,7 @@ const RegistrationForm = () => {
         nickname: '',
         aboutMe: '',
         privacyStatus: 'public',
-        gender: '', // ← Added gender field
+        gender: '',
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof RegistrationFormData, string>>>({});
@@ -92,135 +93,61 @@ const RegistrationForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 border rounded-md shadow-md bg-white">
-            <h2 className="text-2xl mb-4">Register</h2>
+        <form onSubmit={handleSubmit} className="form-container">
+            <h2>Register</h2>
 
-            {/* Email */}
-            <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-            />
-            {errors.email && <span className="text-red-600 text-sm mb-2 block">{errors.email}</span>}
+            <input type="email" name="email" placeholder="Email" value={formData.email}
+                onChange={handleChange} className="form-input" required />
+            {errors.email && <span className="form-error">{errors.email}</span>}
 
-            {/* Password */}
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-            />
-            {errors.password && <span className="text-red-600 text-sm mb-2 block">{errors.password}</span>}
+            <input type="password" name="password" placeholder="Password" value={formData.password}
+                onChange={handleChange} className="form-input" required />
+            {errors.password && <span className="form-error">{errors.password}</span>}
 
-            {/* First Name */}
-            <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-            />
-            {errors.firstName && <span className="text-red-600 text-sm mb-2 block">{errors.firstName}</span>}
+            <input type="text" name="firstName" placeholder="First Name" value={formData.firstName}
+                onChange={handleChange} className="form-input" required />
+            {errors.firstName && <span className="form-error">{errors.firstName}</span>}
 
-            {/* Last Name */}
-            <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-            />
-            {errors.lastName && <span className="text-red-600 text-sm mb-2 block">{errors.lastName}</span>}
+            <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName}
+                onChange={handleChange} className="form-input" required />
+            {errors.lastName && <span className="form-error">{errors.lastName}</span>}
 
-            {/* Date of Birth */}
-            <input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-            />
-            {errors.dateOfBirth && <span className="text-red-600 text-sm mb-2 block">{errors.dateOfBirth}</span>}
+            <input type="date" name="dateOfBirth" value={formData.dateOfBirth}
+                onChange={handleChange} className="form-input" required />
+            {errors.dateOfBirth && <span className="form-error">{errors.dateOfBirth}</span>}
 
-            {/* Gender */}
-            <label className="block mb-1 font-semibold text-gray-700">Gender:</label>
-            <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
-                required
-            >
+            <label className="form-label">Gender:</label>
+            <select name="gender" value={formData.gender}
+                onChange={handleChange} className="form-select" required>
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
             </select>
-            {errors.gender && <span className="text-red-600 text-sm mb-2 block">{errors.gender}</span>}
+            {errors.gender && <span className="form-error">{errors.gender}</span>}
 
-            {/* Avatar */}
-            <input
-                type="file"
-                name="avatar"
-                accept="image/*"
-                onChange={handleChange}
-                className="w-full mb-4"
-            />
+            <input type="file" name="avatar" accept="image/*"
+                onChange={handleChange} className="form-input" />
 
-            {/* Nickname (optional) */}
-            <input
-                type="text"
-                name="nickname"
-                placeholder="Nickname (optional)"
-                value={formData.nickname}
-                onChange={handleChange}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-            />
+            <input type="text" name="nickname" placeholder="Nickname (optional)"
+                value={formData.nickname} onChange={handleChange} className="form-input" />
 
-            {/* About Me */}
-            <textarea
-                name="aboutMe"
-                placeholder="About Me (optional)"
-                value={formData.aboutMe}
-                onChange={handleChange}
-                className="w-full p-2 mb-4 border border-gray-300 rounded resize-none"
-                rows={4}
-            />
+            <textarea name="aboutMe" placeholder="About Me (optional)" value={formData.aboutMe}
+                onChange={handleChange} className="form-textarea" rows={4} />
 
-            {/* Privacy Status */}
-            <label className="block mb-1 font-semibold text-gray-700">Profile Privacy:</label>
-            <select
-                name="privacyStatus"
-                value={formData.privacyStatus}
-                onChange={handleChange}
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
-            >
+            <label className="form-label">Profile Privacy:</label>
+            <select name="privacyStatus" value={formData.privacyStatus}
+                onChange={handleChange} className="form-select">
                 <option value="public">Public</option>
                 <option value="private">Private</option>
                 <option value="almost_private">Almost Private</option>
             </select>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
-            >
+            <button type="submit" disabled={loading} className="form-button">
                 {loading ? 'Submitting...' : 'Register'}
             </button>
 
-            <p className="mt-4">
-                You have an account? <a href="/login" className="text-blue-600 underline">Login</a>
+            <p className="login-link">
+                You have an account? <a href="/login">Login</a>
             </p>
         </form>
     );

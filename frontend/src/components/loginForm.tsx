@@ -1,18 +1,20 @@
 'use client'
 
-import {useState} from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from './AuthContext'
 import axios from 'axios'
+import './component.css/login-form.css' // 👈 Import the CSS
 
-import {useRouter} from 'next/navigation'
+export default function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
+  const { login } = useAuth()
 
-export default function LoginForm(){
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-    const router = useRouter()
-
-const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -21,22 +23,23 @@ const handleSubmit = async (e: React.FormEvent) => {
       password: password
     }
     console.log(creds);
-    
-    try{
-        await axios.post('http://localhost:8080/api/login', 
-            creds, {
-            withCredentials: true // important to send and receive cookies:
-        })
-         router.push('/')
-    }catch (err) {
+
+    try {
+      await axios.post('http://localhost:8080/api/login',
+        creds, {
+        withCredentials: true // important to send and receive cookies:
+      })
+      router.push('/home')
+    } catch (err) {
       setError('Login failed: Invalid email or password')
     } finally {
       setLoading(false)
     }
-}
+  }
+
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-md shadow-md">
-      <h2 className="text-2xl mb-4">Login</h2>
+    <div className="login-container">
+      <h2 className="login-title">Login</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -44,7 +47,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           required
-          className="w-full p-2 mb-3 border rounded"
+          className="login-input"
         />
         <input
           type="password"
@@ -52,19 +55,20 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={e => setPassword(e.target.value)}
           placeholder="Password"
           required
-          className="w-full p-2 mb-3 border rounded"
+          className="login-input"
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white p-2 rounded disabled:opacity-50"
+          className="login-button"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      {error && <p className="mt-3 text-red-600">{error}</p>}
-      <p className="mt-4">
-        Don't have an account? <a href="/register" className="text-blue-600 underline">Register</a>
+      {error && <p className="login-error">{error}</p>}
+      <p className="login-footer">
+        Don't have an account?{' '}
+        <a href="/register">Register</a>
       </p>
     </div>
   )
