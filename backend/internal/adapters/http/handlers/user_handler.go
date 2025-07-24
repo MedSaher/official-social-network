@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"social_network/internal/adapters/http/utils"
 	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/service"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -82,16 +79,9 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to process password"})
-		return
-	}
-
 	user := &models.User{
 		Email:         payload.Email,
-		Password:      string(hashedPassword),
+		Password:      payload.Password,
 		FirstName:     payload.FirstName,
 		LastName:      payload.LastName,
 		Gender:        payload.Gender,
@@ -119,8 +109,8 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-			Email    string `json:"email"`
-			Password string `json:"password"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -154,46 +144,61 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // ----------- Logout -----------
-func (h *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	var token string
-
-	// Try to get token from Authorization header
-	auth := r.Header.Get("Authorization")
-	if strings.HasPrefix(auth, "Bearer ") {
-		token = strings.TrimPrefix(auth, "Bearer ")
-	} else {
-		// Fallback to cookie
-		cookie, err := r.Cookie("session_token")
-		if err != nil {
-			utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "invalid session"})
-			return
-		}
-		token = cookie.Value
-	}
-
-	// Check if session exists
-	_, err := h.sessionService.GetUserIdFromSession(token)
+func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "session not found"})
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
+		return
+	}
+	token := cookie.Value
+
+	fmt.Println("log out: --------------> ", token)
+
+	// userId, err := userHandler.sessionServ.GetUserIdFromSession(token)
+	// if err != nil {
+	// 	utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid session"})
+	// 	return
+	// }
+
+	err = userHandler.sessionService.DestroySession(token)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"message": "failed to logout"})
 		return
 	}
 
-	// Destroy the session
-	err = h.sessionService.DestroySession(token)
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to destroy session"})
-		return
-	}
+	// client := &services.Client{UserId: userId}
+	// userHandler.chatBroker.Unregister <- client
 
-	// Clear the cookie (optional if not used)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    "",
 		Path:     "/",
-		MaxAge:   -1,
 		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
 		HttpOnly: true,
 	})
 
-	utils.ResponseJSON(w, http.StatusOK, map[string]string{"success": "true"})
+	utils.ResponseJSON(w, http.StatusCreated, map[string]string{"message": "User logged out successfully"})
+}
+
+// Create a function to check if the user has a session:
+func (userHandler *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "method not alowed"})
+		return
+	}
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
+		return
+	}
+
+	token := cookie.Value
+	logged := userHandler.sessionService.IsValidSession(token)
+	if !logged {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "User has a valid session"})
 }

@@ -1,15 +1,17 @@
 package models
+
+
 type User struct {
-    Id            int
-    Email         string
-    Password      string   // hashed password
-    FirstName     string
-    LastName      string
-    DateOfBirth   string
-    AvatarPath    *string  // nullable avatar URL or path
-    UserName      string
-    AboutMe       *string  // nullable about me
-    PrivacyStatus string   // "public", "private", or "almost_private"
-    Gender        string   // "male" or "female"
-    CreatedAt     string   // ideally time.Time, but string for now
+	Id            int
+	Email         string
+	Password      string   // This stores the password_hash from DB
+	FirstName     string
+	LastName      string
+	DateOfBirth   string   // Ideally time.Time if you parse the date
+	AvatarPath    *string  // nullable
+	UserName      string
+	AboutMe       *string  // nullable
+	PrivacyStatus string   // should be "public", "private", or "almost_private"
+	Gender        string   // should be "male" or "female"
+	CreatedAt     string   // Ideally time.Time if you parse it
 }

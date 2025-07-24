@@ -74,16 +74,17 @@ func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) {
 	query := `
 		SELECT id, user_name, date_of_birth, gender, password_hash,
-		       email, first_name, last_name, avatar_path, about_me, is_public, created_at
+		       email, first_name, last_name, avatar_path, about_me, privacy_status, created_at
 		FROM users WHERE email = ?
 	`
+
 	user := &models.User{}
 	err := r.db.QueryRow(query, email).Scan(
 		&user.Id,
 		&user.UserName,
 		&user.DateOfBirth,
 		&user.Gender,
-		&user.Password,
+		&user.Password,        // ← password_hash from DB
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
@@ -95,7 +96,8 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("USER: ", user)
+
 	return user, nil
 }
+
 

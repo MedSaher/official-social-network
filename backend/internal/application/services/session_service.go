@@ -32,7 +32,6 @@ func (s *SessionServiceImpl) CreateSession(userID int) (string, time.Time, error
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("erreur token: %w", err)
 	}
-	fmt.Println("Generated token:", token)
 	// Expiration 24h
 	expiresAt := time.Now().Add(24 * time.Hour)
 
