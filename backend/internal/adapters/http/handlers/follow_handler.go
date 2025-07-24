@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"social_network/internal/adapters/http/utils"
 	"social_network/internal/domain/models"
@@ -155,5 +156,42 @@ func (h *FollowHandler) DeleteFollow(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, map[string]any{
 		"success": true,
 		"message": "Follow relationship deleted successfully.",
+	})
+}
+
+func (h *FollowHandler) GetStatusFollow(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	followerIDStr := r.URL.Query().Get("follower_id")
+	followingIDStr := r.URL.Query().Get("following_id")
+
+	followerID, err := strconv.Atoi(followerIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid follower_id"})
+		return
+	}
+	followingID, err := strconv.Atoi(followingIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid following_id"})
+		return
+	}
+
+	if followerID == 0 || followingID == 0 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Follower and following IDs must be provided"})
+		return
+	}
+
+	status, err := h.followService.GetStatusFollow(followerID, followingID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]any{
+		"status":  status,
+		"success": true,
 	})
 }
