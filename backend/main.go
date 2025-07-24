@@ -53,6 +53,8 @@ func main() {
 	r.AddRoute("POST", "/api/follow/decline", followHandler.DeclineFollow)
 	r.AddRoute("DELETE", "/api/follow/delete", followHandler.DeleteFollow)
 	r.AddRoute("GET", "/api/follow/status", followHandler.GetStatusFollow)
+	r.AddRoute("GET", "/api/follow/followers", followHandler.GetFollowers)
+	r.AddRoute("GET", "/api/follow/following", followHandler.GetFollowing)
 
 	
 	// Start server

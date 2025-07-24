@@ -195,3 +195,47 @@ func (h *FollowHandler) GetStatusFollow(w http.ResponseWriter, r *http.Request) 
 		"success": true,
 	})
 }
+
+func (h *FollowHandler) GetFollowers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	userIDStr := r.URL.Query().Get("user_id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil || userID <= 0 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid user_id"})
+		return
+	}
+
+	followers, err := h.followService.GetFollowers(userID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, followers)
+}
+
+func (h *FollowHandler) GetFollowing(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	userIDStr := r.URL.Query().Get("user_id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil || userID <= 0 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid user_id"})
+		return
+	}
+
+	following, err := h.followService.GetFollowing(userID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, following)
+}
