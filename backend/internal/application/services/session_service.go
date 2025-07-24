@@ -49,10 +49,10 @@ func (s *SessionServiceImpl) DestroySession(token string) error {
 	return s.sessionRepo.DeleteSessionByToken(token)
 }
 
-func (s *SessionServiceImpl) IsValidSession(token string) bool {
-	_, err := s.sessionRepo.GetSessionByToken(token)
-	return err == nil
-}
+// func (s *SessionServiceImpl) IsValidSession(token string) bool {
+// 	_, err := s.sessionRepo.GetSessionByToken(token)
+// 	return err == nil
+// }
 
 func (s *SessionServiceImpl) GetUserIdFromSession(token string) (int, error) {
 	return s.sessionRepo.GetSessionByToken(token)

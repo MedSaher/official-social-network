@@ -40,41 +40,34 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-		NickName    string `json:"nickname"`
-		UserName    string `json:"username"`
-		Email       string `json:"email"`
-		Password    string `json:"password"`
-		FirstName   string `json:"firstName"`
-		LastName    string `json:"lastName"`
-		Gender      string `json:"gender"`
-		DateOfBirth string `json:"dateOfBirth"`
-		AboutMe     string `json:"aboutMe"`
-		IsPublic    *bool  `json:"is_public"`
+		Email         string `json:"email"`
+		Password      string `json:"password"`
+		FirstName     string `json:"firstName"`
+		LastName      string `json:"lastName"`
+		Gender        string `json:"gender"`
+		DateOfBirth   string `json:"dateOfBirth"`
+		AboutMe       string `json:"aboutMe"`
+		AvatarUrl     string `json:"avatarUrl"`     
+		PrivacyStatus string `json:"privacyStatus"` // "public", "private", "almost_private"
+		UserName      string `json:"username"`    
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
 		return
 	}
-
 	user := &models.User{
-		NickName:    payload.NickName,
-		UserName:    payload.UserName,
-		Email:       payload.Email,
-		Password:    payload.Password,
-		FirstName:   payload.FirstName,
-		LastName:    payload.LastName,
-		Gender:      payload.Gender,
-		DateOfBirth: payload.DateOfBirth,
-		AboutMe:     stringPtr(payload.AboutMe),
-		IsPublic: func() bool {
-			if payload.IsPublic != nil {
-				return *payload.IsPublic
-			}
-			return true // public par défaut
-		}(),
+		Email:         payload.Email,
+		Password:      payload.Password,
+		FirstName:     payload.FirstName,
+		LastName:      payload.LastName,
+		Gender:        payload.Gender,
+		DateOfBirth:   payload.DateOfBirth,
+		AboutMe:       stringPtr(payload.AboutMe),
+		AvatarPath:    stringPtr(payload.AvatarUrl),
+		PrivacyStatus: payload.PrivacyStatus,
+		UserName:      payload.UserName,
 	}
-
 	if err := h.userService.Register(user); err != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
 		return
@@ -170,4 +163,22 @@ func (h *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 
 	utils.ResponseJSON(w, http.StatusOK, map[string]string{"success": "true"})
+}
+
+
+// Create a function to check if the user has a session:
+func (h *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "method not alowed"})
+		return
+	}
+
+	// Check if the user has a valid session
+	_, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "User has a valid session"})
 }

@@ -36,6 +36,7 @@ func (h *FollowHandler) CreateFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the current user's ID from the session
 	followerID, err := utils.GetCurrentUserID(r, h.sessionService)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
