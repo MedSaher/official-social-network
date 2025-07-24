@@ -1,7 +1,7 @@
 #!/bin/bash
 
 API_URL="http://localhost:8080/api/follow"
-FOLLOWING_ID=1
+FOLLOWING_ID=2
 
 if [ ! -f session_token.txt ]; then
   echo "Error: session_token.txt not found"
