@@ -46,7 +46,7 @@ func main() {
 	r.AddRoute("POST", "/api/login", userHandler.Login)
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 	r.AddRoute("GET", "/api/check-session", userHandler.CheckSession)
-	
+	r.AddRoute("GET", "/api/profile", userHandler.GetProfile)
 
 	// Follow routes
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)
