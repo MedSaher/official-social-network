@@ -44,8 +44,8 @@ func (r *UserRepositoryImpl) RegisterNewUser(user *models.User) error {
 func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 		fmt.Println(" user by ID:", id)
 	query := `
-		SELECT id, nick_name, user_name, date_of_birth, gender, password_hash,
-		       email, first_name, last_name, avatar_path, about_me, is_public, created_at
+		SELECT id, user_name, date_of_birth, gender, password_hash,
+		       email, first_name, last_name, avatar_path, about_me, privacy_status, created_at
 		FROM users WHERE id = ?
 	`
 	user := &models.User{}
@@ -82,7 +82,7 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 		&user.Id,
 		&user.UserName,
 		&user.DateOfBirth,
-		// &user.Gender,
+		&user.Gender,
 		&user.Password,
 		&user.Email,
 		&user.FirstName,
@@ -95,12 +95,7 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("USER: ", user)
 	return user, nil
 }
 
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}

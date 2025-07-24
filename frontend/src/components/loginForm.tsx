@@ -16,11 +16,15 @@ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    let creds = {
+      email: email,
+      password: password
+    }
+    console.log(creds);
+    
     try{
-        await axios.post('http://localhost:8080/api/login', {
-            email,
-            password
-        }, {
+        await axios.post('http://localhost:8080/api/login', 
+            creds, {
             withCredentials: true // important to send and receive cookies:
         })
          router.push('/')

@@ -113,22 +113,22 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 // ----------- Login -----------
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("----------->")
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
 		return
 	}
 
-	var cred struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+	var payload struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
+
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
 		return
 	}
 
-	user, err := h.userService.Authenticate(cred.Email, cred.Password)
+	user, err := h.userService.Authenticate(payload.Email, payload.Password)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Authentication failed"})
 		return
