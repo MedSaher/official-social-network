@@ -100,3 +100,19 @@ func (s *FollowServiceImpl) GetStatusFollow(followerID, followingID int) (string
 
 	return s.followRepo.GetStatusFollow(followerID, followingID)
 }
+
+func (s *FollowServiceImpl) GetFollowers(userID int) ([]models.FollowerInfo, error) {
+	if userID == 0 {
+		return nil, errors.New("user ID must be provided")
+	}
+
+	return s.followRepo.GetFollowers(userID)
+}
+
+func (s *FollowServiceImpl) GetFollowing(userID int) ([]models.FollowerInfo, error) {
+	if userID == 0 {
+		return nil, errors.New("user ID must be provided")
+	}
+
+	return s.followRepo.GetFollowing(userID)
+}
