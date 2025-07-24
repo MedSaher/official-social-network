@@ -8,3 +8,9 @@ type Follow struct {
 	CreatedAt    string `json:"created_at"`
 	UpdatedAt    string `json:"updated_at"`
 }
+
+type FollowerInfo struct {
+	UserID     int     `json:"user_id"`
+	UserName   string  `json:"user_name"`
+	Status     string  `json:"status"`
+}

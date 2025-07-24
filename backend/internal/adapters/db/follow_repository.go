@@ -109,3 +109,63 @@ func (r *FollowRepositoryImpl) GetStatusFollow(followerID, followingID int) (str
 
 	return status, nil
 }
+
+func (r *FollowRepositoryImpl) GetFollowers(userID int) ([]models.FollowerInfo, error) {
+	query := `
+		SELECT u.id, u.user_name, f.status
+		FROM follows f
+		JOIN users u ON f.follower_id = u.id
+		WHERE f.following_id = ?
+	`
+
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving followers: %w", err)
+	}
+	defer rows.Close()
+
+	var followers []models.FollowerInfo
+	for rows.Next() {
+		var info models.FollowerInfo
+		if err := rows.Scan(&info.UserID, &info.UserName, &info.Status); err != nil {
+			return nil, fmt.Errorf("error scanning row: %w", err)
+		}
+		followers = append(followers, info)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %w", err)
+	}
+
+	return followers, nil
+}
+
+func (r *FollowRepositoryImpl) GetFollowing(userID int) ([]models.FollowerInfo, error) {
+	query := `
+		SELECT u.id, u.user_name, f.status
+		FROM follows f
+		JOIN users u ON f.following_id = u.id
+		WHERE f.follower_id = ?
+	`
+
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving following: %w", err)
+	}
+	defer rows.Close()
+
+	var following []models.FollowerInfo
+	for rows.Next() {
+		var info models.FollowerInfo
+		if err := rows.Scan(&info.UserID, &info.UserName, &info.Status); err != nil {
+			return nil, fmt.Errorf("error scanning row: %w", err)
+		}
+		following = append(following, info)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %w", err)
+	}
+
+	return following, nil
+}
