@@ -51,6 +51,8 @@ func main() {
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)
 	r.AddRoute("POST", "/api/follow/accept", followHandler.AcceptFollow)
 	r.AddRoute("POST", "/api/follow/decline", followHandler.DeclineFollow)
+	r.AddRoute("DELETE", "/api/follow/delete", followHandler.DeleteFollow)
+
 	
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
