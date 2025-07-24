@@ -115,7 +115,7 @@ func (r *FollowRepositoryImpl) GetFollowers(userID int) ([]models.FollowerInfo, 
 		SELECT u.id, u.user_name, f.status
 		FROM follows f
 		JOIN users u ON f.follower_id = u.id
-		WHERE f.following_id = ?
+		WHERE f.following_id = ? AND f.status = 'accepted'
 	`
 
 	rows, err := r.db.Query(query, userID)
@@ -145,7 +145,7 @@ func (r *FollowRepositoryImpl) GetFollowing(userID int) ([]models.FollowerInfo, 
 		SELECT u.id, u.user_name, f.status
 		FROM follows f
 		JOIN users u ON f.following_id = u.id
-		WHERE f.follower_id = ?
+		WHERE f.follower_id = ? AND f.status = 'accepted'
 	`
 
 	rows, err := r.db.Query(query, userID)

@@ -57,7 +57,7 @@ func main() {
 	r.AddRoute("GET", "/api/follow/following", followHandler.GetFollowing)
 
 	
-	// Start server
+	// Start server 
 	log.Println("🚀 Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", r)
 }

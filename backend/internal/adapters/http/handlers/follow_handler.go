@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -197,6 +198,7 @@ func (h *FollowHandler) GetStatusFollow(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *FollowHandler) GetFollowers(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("GetFollowers called")
 	if r.Method != http.MethodGet {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
 		return
