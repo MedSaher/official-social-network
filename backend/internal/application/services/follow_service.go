@@ -31,7 +31,7 @@ func (s *FollowServiceImpl) CreateFollow(follow *models.Follow) error {
 		return fmt.Errorf("user not found: %w", err)
 	}
 
-	if user.IsPublic {
+	if user.PrivacyStatus == "public" {
 		follow.Status = "accepted"
 	} else {
 		follow.Status = "pending"
