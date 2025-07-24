@@ -47,38 +47,15 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Gender        string `json:"gender"`
 		DateOfBirth   string `json:"dateOfBirth"`
 		AboutMe       string `json:"aboutMe"`
-		PrivacyStatus string `json:"privacyStatus"`
+		AvatarUrl     string `json:"avatarUrl"`     
+		PrivacyStatus string `json:"privacyStatus"` // "public", "private", "almost_private"
+		UserName      string `json:"username"`    
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
 		return
 	}
-
-	// Validate required fields
-	if payload.Email == "" || payload.Password == "" || payload.FirstName == "" ||
-		payload.LastName == "" || payload.DateOfBirth == "" || payload.Gender == "" || payload.PrivacyStatus == "" {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Missing required fields"})
-		return
-	}
-
-	// Validate gender
-	if payload.Gender != "male" && payload.Gender != "female" {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid gender value"})
-		return
-	}
-
-	// Validate privacy status
-	validPrivacy := map[string]bool{
-		"public":         true,
-		"private":        true,
-		"almost_private": true,
-	}
-	if !validPrivacy[payload.PrivacyStatus] {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid privacy status"})
-		return
-	}
-
 	user := &models.User{
 		Email:         payload.Email,
 		Password:      payload.Password,
@@ -87,9 +64,10 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Gender:        payload.Gender,
 		DateOfBirth:   payload.DateOfBirth,
 		AboutMe:       stringPtr(payload.AboutMe),
+		AvatarPath:    stringPtr(payload.AvatarUrl),
 		PrivacyStatus: payload.PrivacyStatus,
+		UserName:      payload.UserName,
 	}
-
 	if err := h.userService.Register(user); err != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
 		return
@@ -178,24 +156,20 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	utils.ResponseJSON(w, http.StatusCreated, map[string]string{"message": "User logged out successfully"})
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"success": "true"})
 }
 
+
 // Create a function to check if the user has a session:
-func (userHandler *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "method not alowed"})
 		return
 	}
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
-		return
-	}
 
-	token := cookie.Value
-	logged := userHandler.sessionService.IsValidSession(token)
-	if !logged {
+	// Check if the user has a valid session
+	_, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"message": "invalid token"})
 		return
 	}

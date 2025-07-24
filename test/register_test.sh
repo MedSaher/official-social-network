@@ -1,17 +1,15 @@
 #!/bin/bash
 
-curl -X POST http://localhost:8080/api/register \
+curl -s -X POST http://localhost:8080/api/register \
   -H "Content-Type: application/json" \
   -d '{
-  "nickname": "testnick",
-  "username": "testuser",
-  "email": "test@example.com",
-  "password": "secret123",
-  "firstName": "John",
-  "lastName": "Doe",
-  "gender": "male",
-  "dateOfBirth": "1990-01-01",
-  "aboutMe": "Just testing.",
-  "privacyStatus": "public"
-}
-'
+    "username": "beta_user",
+    "email": "beta@example.com",
+    "password": "strongpassword123",
+    "firstName": "Beta",
+    "lastName": "User",
+    "gender": "male",
+    "dateOfBirth": "1995-09-10",
+    "aboutMe": "Développeur backend motivé.",
+    "privacyStatus": "private"
+  }'

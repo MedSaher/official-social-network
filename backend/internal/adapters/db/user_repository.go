@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 }
 
 func (r *UserRepositoryImpl) RegisterNewUser(user *models.User) error {
-    query := `
+	query := `
         INSERT INTO users (
             email, password_hash, first_name, last_name, date_of_birth,
             avatar_path, user_name, about_me, privacy_status, gender
@@ -25,24 +25,24 @@ func (r *UserRepositoryImpl) RegisterNewUser(user *models.User) error {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
-    _, err := r.db.Exec(
-        query,
-        user.Email,
-        user.Password,       // hashed password
-        user.FirstName,
-        user.LastName,
-        user.DateOfBirth,
-        user.AvatarPath,      // assuming AvatarUrl maps to avatar_path column, or rename column accordingly
-        user.UserName,       // if you generate username on backend; else send null or empty string
-        user.AboutMe,
-        user.PrivacyStatus,  // now a string: "public", "private", "almost_private"
-        user.Gender,         // "male" or "female"
-    )
-    return err
+	_, err := r.db.Exec(
+		query,
+		user.Email,
+		user.Password,
+		user.FirstName,
+		user.LastName,
+		user.DateOfBirth,
+		user.AvatarPath,
+		user.UserName,
+		user.AboutMe,
+		user.PrivacyStatus,
+		user.Gender,
+	)
+	return err
 }
 
 func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
-		fmt.Println(" user by ID:", id)
+	fmt.Println(" user by ID:", id)
 	query := `
 		SELECT id, user_name, date_of_birth, gender, password_hash,
 		       email, first_name, last_name, avatar_path, about_me, privacy_status, created_at
@@ -63,7 +63,7 @@ func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 		&user.PrivacyStatus,
 		&user.CreatedAt,
 	)
-		fmt.Println("Fetching user by ID:", user.Id)
+	fmt.Println("Fetching user by ID:", user.Id)
 
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 		&user.UserName,
 		&user.DateOfBirth,
 		&user.Gender,
-		&user.Password,        // ← password_hash from DB
+		&user.Password,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
@@ -99,5 +99,3 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 
 	return user, nil
 }
-
-

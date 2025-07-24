@@ -2,7 +2,7 @@
 
 # ----------- Configuration -----------
 API_URL="http://localhost:8080/api/login"
-EMAIL="mossab@example.com"
+EMAIL="beta@example.com"
 PASSWORD="strongpassword123"
 
 # ----------- Login Request -----------
