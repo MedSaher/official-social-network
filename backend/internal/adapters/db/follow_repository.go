@@ -90,3 +90,22 @@ func (r *FollowRepositoryImpl) DeleteFollow(followerID, followingID int) error {
 
 	return nil
 }
+
+func (r *FollowRepositoryImpl) GetStatusFollow(followerID, followingID int) (string, error) {
+	query := `
+		SELECT status
+		FROM follows
+		WHERE follower_id = ? AND following_id = ?
+	`
+
+	var status string
+	err := r.db.QueryRow(query, followerID, followingID).Scan(&status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no follow relationship found for follower ID %d and following ID %d", followerID, followingID)
+		}
+		return "", fmt.Errorf("error retrieving follow status: %w", err)
+	}
+
+	return status, nil
+}
