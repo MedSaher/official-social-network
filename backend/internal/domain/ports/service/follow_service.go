@@ -7,4 +7,5 @@ type FollowService interface {
 	AcceptFollow(followerID, followingID, currentUserID int) error
 	DeclineFollow(followerID, followingID, currentUserID int) error
 	DeleteFollow(followerID, followingID, currentUserID int) error
+	GetStatusFollow(followerID, followingID int) (string, error)
 }
