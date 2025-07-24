@@ -22,11 +22,9 @@ export default function HomePage() {
   useEffect(() => {
     checkSession()
   }, [])
-
-    return (
-      <main>
-        <RenderHomePage />
-      </main>
-    );
-
+  return (
+    <main>
+      <RenderHomePage />
+    </main>
+  );
 }
