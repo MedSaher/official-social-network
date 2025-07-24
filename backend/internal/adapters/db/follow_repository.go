@@ -76,3 +76,17 @@ func (r *FollowRepositoryImpl) DeclineFollow(followerID, followingID int) error 
 
 	return nil
 }
+
+func (r *FollowRepositoryImpl) DeleteFollow(followerID, followingID int) error {
+	query := `
+		DELETE FROM follows
+		WHERE follower_id = ? AND following_id = ?
+	`
+
+	_, err := r.db.Exec(query, followerID, followingID)
+	if err != nil {
+		return fmt.Errorf("error deleting follow relationship: %w", err)
+	}
+
+	return nil
+}
