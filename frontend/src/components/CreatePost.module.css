@@ -1,0 +1,61 @@
+.formContainer {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+  color: #374151;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.fileInput {
+  margin-top: 0.5rem;
+}
+
+.button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.response {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}

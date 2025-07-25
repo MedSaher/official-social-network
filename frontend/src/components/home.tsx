@@ -2,6 +2,7 @@
 
 import axios from "axios"
 import { useRouter } from 'next/navigation'
+import CreatePost  from './post'
 
 export default function RenderHomePage() {
     let router = useRouter()
@@ -21,6 +22,7 @@ export default function RenderHomePage() {
     <div>
       <h1>Welcome to Home Page</h1>
       <button onClick={handleLogout}>Logout</button>
+      <CreatePost/>
     </div>
   )
 }

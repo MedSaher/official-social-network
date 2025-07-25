@@ -31,16 +31,16 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method Not Allowed"})
 		return
 	}
-
+	
 	// Validate & parse user_id (required)
 	// Get token from "Token" header (you can change the key name if needed)
-	token := r.Header.Get("session_token")
-	if token == "" {
+	token, err := r.Cookie("session_token")
+	if token.Value == "" || err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Missing session token in headers"})
 		return
 	}
 
-	userID, err := p.sessionService.GetUserIdFromSession(token)
+	userID, err := p.sessionService.GetUserIdFromSession(token.Value)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Invalid or expired session token"})
 		return
@@ -129,7 +129,6 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
 		return
 	}
-
 	// Return created post as JSON
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

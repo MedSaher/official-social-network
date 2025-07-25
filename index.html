@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Post</title>
+  <style>
+    body {
+      background: #f3f4f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+      color: #374151;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      margin-top: 0.5rem;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    .response {
+      margin-top: 1rem;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Create a New Post</h2>
+
+    <form id="postForm" enctype="multipart/form-data">
+      <label for="content">Post Content</label>
+      <textarea id="content" name="content" rows="4" required></textarea>
+
+      <label for="group_id">Group ID (optional)</label>
+      <input type="text" id="group_id" name="group_id" placeholder="e.g. 1 or leave empty" />
+
+      <label for="privacy">Privacy</label>
+      <select id="privacy" name="privacy">
+        <option value="public">Public</option>
+        <option value="almost_private">Almost Private</option>
+        <option value="private">Private</option>
+      </select>
+
+      <label for="image">Upload Image</label>
+      <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png, .gif" />
+
+      <button type="submit">Post</button>
+      <div class="response" id="responseMessage"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('postForm');
+    const responseDiv = document.getElementById('responseMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const sessionToken = "aFbBzxeeFTM7wGsYNImYNc0lbFnJcD_dhs-9P8ddfGI="; // Replace with real token
+
+      try {
+        const response = await fetch('http://localhost:8080/api/posts/create_post', {
+          method: 'POST',
+          headers: {
+            'session_token': sessionToken
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          responseDiv.style.color = 'green';
+          responseDiv.textContent = '✅ Post created successfully!';
+          form.reset();
+        } else {
+          responseDiv.style.color = 'red';
+          responseDiv.textContent = `❌ Error: ${data.error || 'Unknown error'}`;
+        }
+      } catch (err) {
+        responseDiv.style.color = 'red';
+        responseDiv.textContent = `❌ Network error: ${err.message}`;
+      }
+    });
+  </script>
+
+</body>
+</html>
