@@ -32,22 +32,24 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse multipart form, limit max upload size (e.g. 10MB)
-	err := r.ParseMultipartForm(10 << 20) // 10MB
-	if err != nil {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Failed to parse form data"})
+	// Validate & parse user_id (required)
+	// Get token from "Token" header (you can change the key name if needed)
+	token := r.Header.Get("session_token")
+	if token == "" {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Missing session token in headers"})
 		return
 	}
 
-	// Validate & parse user_id (required)
-	userIDStr := r.FormValue("user_id")
-	if userIDStr == "" {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "user_id is required"})
+	userID, err := p.sessionService.GetUserIdFromSession(token)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Invalid or expired session token"})
 		return
 	}
-	userID, err := strconv.Atoi(userIDStr)
+
+	// Parse multipart form, limit max upload size (e.g. 10MB)
+	err = r.ParseMultipartForm(10 << 20) // 10MB
 	if err != nil {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid user_id"})
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Failed to parse form data"})
 		return
 	}
 
@@ -118,8 +120,9 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		savedImagePath = filePath // or relative path as per your app
+	} else {
+		fmt.Println(err)
 	}
-
 	// Call service to create post
 	post, err := p.postService.CreatePost(r.Context(), userID, groupID, content, privacy, savedImagePath)
 	if err != nil {
