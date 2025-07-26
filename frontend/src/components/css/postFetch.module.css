@@ -62,3 +62,20 @@
   color: red;
   margin-top: 40px;
 }
+
+.iconRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.commentIcon {
+  font-size: 20px;
+  color: #2d4c3c;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.commentIcon:hover {
+  color: #c6a264;
+}

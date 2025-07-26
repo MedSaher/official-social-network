@@ -2,7 +2,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import styles from './postFetch.module.css';
+import styles from './css/postFetch.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import CommentModal from './commentModal';
 
 type Post = {
   id: number;
@@ -19,6 +22,7 @@ export default function PostList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activePostId, setActivePostId] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchPosts() {
@@ -57,10 +61,26 @@ export default function PostList() {
           </div>
           <p className={styles.content}>{post.content}</p>
           {post.image_path && (
-            <img src={`http://localhost:8080/${post.image_path}`} alt="Post image" className={styles.image} />
+            <img
+              src={`http://localhost:8080/${post.image_path}`}
+              alt="Post image"
+              className={styles.image}
+            />
           )}
+          <div className={styles.iconRow}>
+            <FontAwesomeIcon
+              icon={faCommentDots}
+              className={styles.commentIcon}
+              onClick={() => setActivePostId(post.id)}
+              title="Comment"
+            />
+          </div>
         </div>
       ))}
+
+      {activePostId !== null && (
+        <CommentModal postId={activePostId} onClose={() => setActivePostId(null)} />
+      )}
     </div>
   );
 }

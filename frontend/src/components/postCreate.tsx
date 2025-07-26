@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import styles from './CreatePost.module.css'  // Adjust path accordingly
+import styles from './css/CreatePost.module.css'  // Adjust path accordingly
 
 export default function CreatePost() {
     const [content, setContent] = useState('')
