@@ -16,19 +16,10 @@ export default function RenderHomePage() {
     }
   }
   return (
-<<<<<<< HEAD
-    <div>
-      <h1>Welcome to Home Page</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <CreatePost/>
-      <PostList/>
-    </div>
-=======
     <>
       <div>
         <h1>Welcome to Home Page</h1>
       </div>
     </>
->>>>>>> origin/fix-frontend-errs
   )
 }
