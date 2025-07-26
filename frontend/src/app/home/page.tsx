@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import RenderHomePage from "../components/home"
+import RenderHomePage from "../../components/home"
 import axios from 'axios'
 
 export default function HomePage() {

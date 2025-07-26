@@ -10,7 +10,7 @@ import (
 type Router struct {
 	routes      map[string]http.HandlerFunc
 	sessionServ service.SessionService
-	staticFiles http.Handler
+	staticFiles map[string]http.Handler
 }
 
 // NewRouter crée un nouveau routeur avec session + static frontend
@@ -18,7 +18,10 @@ func NewRouter(session service.SessionService) *Router {
 	return &Router{
 		routes:      make(map[string]http.HandlerFunc),
 		sessionServ: session,
-		staticFiles: http.FileServer(http.Dir("./frontend/out")), // <-- frontend exporté ici
+		staticFiles: map[string]http.Handler{
+			"/frontend/": http.StripPrefix("/frontend/", http.FileServer(http.Dir("./frontend/out"))),
+			"/avatars/":  http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))),
+		},
 	}
 }
 
@@ -32,8 +35,6 @@ func (r *Router) AddRoute(method string, path string, handler http.HandlerFunc) 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// CORS
 	origin := req.Header.Get("Origin")
-
-	// IMPORTANT: don't set Allow-Origin to * when allowing credentials!
 	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -44,7 +45,15 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// API: /api/... → dispatch vers les handlers
+	// Serve static files
+	for prefix, handler := range r.staticFiles {
+		if strings.HasPrefix(req.URL.Path, prefix) {
+			handler.ServeHTTP(w, req)
+			return
+		}
+	}
+
+	// Handle API routes
 	if strings.HasPrefix(req.URL.Path, "/api/") {
 		key := strings.ToLower(req.Method + ":" + req.URL.Path)
 		if handler, ok := r.routes[key]; ok {
@@ -55,6 +64,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+<<<<<<< HEAD
 	// ✅ NEW: Serve /uploads/posts/* static files
 	if strings.HasPrefix(req.URL.Path, "/uploads/posts/") {
 		fs := http.StripPrefix("/uploads/posts/", http.FileServer(http.Dir("./uploads/posts")))
@@ -64,4 +74,13 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// Autres → fichiers statiques (Next.js build)
 	r.staticFiles.ServeHTTP(w, req)
+=======
+	// Default: frontend (e.g., Next.js static routes)
+	if indexHandler, ok := r.staticFiles["/frontend/"]; ok {
+		indexHandler.ServeHTTP(w, req)
+		return
+	}
+
+	http.NotFound(w, req)
+>>>>>>> origin/fix-frontend-errs
 }

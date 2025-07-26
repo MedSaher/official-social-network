@@ -59,6 +59,7 @@ func main() {
 	r.AddRoute("GET", "/api/follow/status", followHandler.GetStatusFollow)
 	r.AddRoute("GET", "/api/follow/followers", followHandler.GetFollowers)
 	r.AddRoute("GET", "/api/follow/following", followHandler.GetFollowing)
+<<<<<<< HEAD
 
 	// posts routes
 	r.AddRoute("POST", "/api/posts/create_comment", postHandler.CreateComment)
@@ -67,7 +68,12 @@ func main() {
 	r.AddRoute("GET", "/api/posts/fetch_comments", postHandler.FetchComments)
 	// /api/posts/fetch_comments
 
+=======
+>>>>>>> origin/fix-frontend-errs
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
-	http.ListenAndServe(":8080", r)
+	err = http.ListenAndServe(":8080", r)
+	if err != nil {
+		log.Fatal("Server error:", err)
+	}
 }

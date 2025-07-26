@@ -3,7 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"social_network/internal/adapters/http/utils"
@@ -23,7 +28,7 @@ func NewUserHandler(userSvc service.UserService, sessionSvc service.SessionServi
 	}
 }
 
-// Helper function to convert string to pointer
+// Helper to convert string to *string
 func stringPtr(s string) *string {
 	if s == "" {
 		return nil
@@ -31,43 +36,87 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-// ----------- Register -----------
+// sanitizeFileName removes path separators from filenames for security
+func sanitizeFileName(name string) string {
+	return strings.Map(func(r rune) rune {
+		if r == os.PathSeparator || r == '/' || r == '\\' {
+			return -1
+		}
+		return r
+	}, name)
+}
 
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Register handler called")
 	if r.Method != http.MethodPost {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
 		return
 	}
 
-	var payload struct {
-		Email         string `json:"email"`
-		Password      string `json:"password"`
-		FirstName     string `json:"firstName"`
-		LastName      string `json:"lastName"`
-		Gender        string `json:"gender"`
-		DateOfBirth   string `json:"dateOfBirth"`
-		AboutMe       string `json:"aboutMe"`
-		AvatarUrl     string `json:"avatarUrl"`     
-		PrivacyStatus string `json:"privacyStatus"` // "public", "private", "almost_private"
-		UserName      string `json:"username"`    
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Failed to parse form data"})
 		return
 	}
-	user := &models.User{
-		Email:         payload.Email,
-		Password:      payload.Password,
-		FirstName:     payload.FirstName,
-		LastName:      payload.LastName,
-		Gender:        payload.Gender,
-		DateOfBirth:   payload.DateOfBirth,
-		AboutMe:       stringPtr(payload.AboutMe),
-		AvatarPath:    stringPtr(payload.AvatarUrl),
-		PrivacyStatus: payload.PrivacyStatus,
-		UserName:      payload.UserName,
+
+	// Extract form values first (needed for nickname)
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	firstName := r.FormValue("firstName")
+	lastName := r.FormValue("lastName")
+	gender := r.FormValue("gender")
+	dateOfBirth := r.FormValue("dateOfBirth")
+	aboutMe := r.FormValue("aboutMe")
+	privacyStatus := r.FormValue("privacyStatus")
+	nickname := r.FormValue("nickname")
+
+	// Prepare avatar file (if provided)
+	var avatarPath *string
+	file, header, err := r.FormFile("avatar")
+	if err == nil {
+		defer file.Close()
+
+		ext := filepath.Ext(header.Filename)
+		timestamp := time.Now().UnixNano()
+		newFileName := fmt.Sprintf("%d%s", timestamp, ext)
+
+		const uploadDir = "./social_network/avatars"
+		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create upload directory"})
+			return
+		}
+
+		savePath := filepath.Join(uploadDir, newFileName)
+		out, err := os.Create(savePath)
+		if err != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to save avatar file"})
+			return
+		}
+		defer out.Close()
+
+		if _, err := io.Copy(out, file); err != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to write avatar file"})
+			return
+		}
+
+		avatarPath = &savePath
+	} else if err != http.ErrMissingFile {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Error retrieving avatar file"})
+		return
 	}
+
+	user := &models.User{
+		Email:         email,
+		Password:      password,
+		FirstName:     firstName,
+		LastName:      lastName,
+		Gender:        gender,
+		DateOfBirth:   dateOfBirth,
+		AboutMe:       stringPtr(aboutMe),
+		AvatarPath:    avatarPath,
+		PrivacyStatus: privacyStatus,
+		UserName:      nickname,
+	}
+
 	if err := h.userService.Register(user); err != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
 		return
@@ -159,7 +208,6 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, map[string]string{"success": "true"})
 }
 
-
 // Create a function to check if the user has a session:
 func (h *UserHandler) CheckSession(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -182,18 +230,27 @@ func (h *UserHandler) GetFullProfile(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "method not allowed"})
 		return
 	}
-
-	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	loggedUserID, err := utils.GetCurrentUserID(r, h.sessionService)
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
 		return
 	}
-
-	user, err := h.userService.GetFullProfile(userID)
+	// Optionally get profile owner ID from query param if viewing another user
+	profileID := r.URL.Query().Get("user_id")
+	if profileID == "" {
+		profileID = strconv.Itoa(loggedUserID)
+	}
+	profileOwnerID, err := strconv.Atoi(profileID)
 	if err != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to get user profile"})
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid user id"})
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusOK, user)
+	profileData, err := h.userService.GetFullProfileData(loggedUserID, profileOwnerID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, profileData)
 }
