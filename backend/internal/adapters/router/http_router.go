@@ -45,12 +45,19 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Serve static files
+	// Serve static files by prefix
 	for prefix, handler := range r.staticFiles {
 		if strings.HasPrefix(req.URL.Path, prefix) {
 			handler.ServeHTTP(w, req)
 			return
 		}
+	}
+
+	// ✅ NEW: Serve /uploads/posts/* static files
+	if strings.HasPrefix(req.URL.Path, "/uploads/posts/") {
+		fs := http.StripPrefix("/uploads/posts/", http.FileServer(http.Dir("./uploads/posts")))
+		fs.ServeHTTP(w, req)
+		return
 	}
 
 	// Handle API routes
@@ -64,23 +71,11 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-<<<<<<< HEAD
-	// ✅ NEW: Serve /uploads/posts/* static files
-	if strings.HasPrefix(req.URL.Path, "/uploads/posts/") {
-		fs := http.StripPrefix("/uploads/posts/", http.FileServer(http.Dir("./uploads/posts")))
-		fs.ServeHTTP(w, req)
-		return
-	}
-
-	// Autres → fichiers statiques (Next.js build)
-	r.staticFiles.ServeHTTP(w, req)
-=======
-	// Default: frontend (e.g., Next.js static routes)
+	// Default: frontend static files (Next.js build)
 	if indexHandler, ok := r.staticFiles["/frontend/"]; ok {
 		indexHandler.ServeHTTP(w, req)
 		return
 	}
 
 	http.NotFound(w, req)
->>>>>>> origin/fix-frontend-errs
 }

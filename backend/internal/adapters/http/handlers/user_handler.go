@@ -79,7 +79,7 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		timestamp := time.Now().UnixNano()
 		newFileName := fmt.Sprintf("%d%s", timestamp, ext)
 
-		const uploadDir = "./social_network/avatars"
+		const uploadDir = "./avatars"
 		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
 			utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create upload directory"})
 			return
