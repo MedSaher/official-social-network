@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"social_network/internal/adapters/http/utils"
+	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/service"
 	"strconv"
 	"strings"
@@ -152,4 +153,57 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
     }
 
     utils.ResponseJSON(w, http.StatusOK, posts)
+}
+
+func (h *PostHandler) FetchComments(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method Not Allowed"})
+        return
+    }
+
+    postIDStr := r.URL.Query().Get("post_id")
+    if postIDStr == "" {
+        utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "post_id is required"})
+        return
+    }
+
+    postID, err := strconv.Atoi(postIDStr)
+    if err != nil {
+        utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid post_id"})
+        return
+    }
+
+    comments, err := h.postService.GetCommentsByPostID(r.Context(), postID)
+    if err != nil {
+        utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to fetch comments"})
+        return
+    }
+
+    utils.ResponseJSON(w, http.StatusOK, comments)
+}
+
+func (h *PostHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method Not Allowed"})
+        return
+    }
+
+    var c models.Comment
+    if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+        utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid JSON"})
+        return
+    }
+
+    if c.PostID == 0 || c.UserID == 0 || len(c.Content) == 0 {
+        utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "post_id, user_id, and content are required"})
+        return
+    }
+
+    err := h.postService.CreateComment(r.Context(), &c)
+    if err != nil {
+        utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to create comment"})
+        return
+    }
+
+    utils.ResponseJSON(w, http.StatusCreated, c)
 }

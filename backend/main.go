@@ -61,8 +61,11 @@ func main() {
 	r.AddRoute("GET", "/api/follow/following", followHandler.GetFollowing)
 
 	// posts routes
+	r.AddRoute("POST", "/api/posts/create_comment", postHandler.CreateComment)
 	r.AddRoute("POST", "/api/posts/create_post", postHandler.CreatePost)
 	r.AddRoute("GET", "/api/posts/fetch_posts", postHandler.GetPosts)
+	r.AddRoute("GET", "/api/posts/fetch_comments", postHandler.FetchComments)
+	// /api/posts/fetch_comments
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")

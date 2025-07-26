@@ -137,3 +137,47 @@ func (r *PostRepository) GetAllPosts(ctx context.Context) ([]models.Post, error)
 
     return posts, nil
 }
+
+func (r *PostRepository) GetCommentsByPostID(ctx context.Context, postID int) ([]models.Comment, error) {
+    rows, err := r.db.QueryContext(ctx, `
+        SELECT id, post_id, user_id, content, created_at
+        FROM comments
+        WHERE post_id = ?
+        ORDER BY created_at ASC
+    `, postID)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var comments []models.Comment
+    for rows.Next() {
+        var c models.Comment
+        if err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &c.Content, &c.CreatedAt); err != nil {
+            return nil, err
+        }
+        comments = append(comments, c)
+    }
+
+    return comments, nil
+}
+
+func (r *PostRepository) CreateComment(ctx context.Context, c *models.Comment) error {
+    result, err := r.db.ExecContext(ctx, `
+        INSERT INTO comments (post_id, user_id, content)
+        VALUES (?, ?, ?)`,
+        c.PostID, c.UserID, c.Content,
+    )
+    if err != nil {
+        return err
+    }
+
+    lastID, err := result.LastInsertId()
+    if err != nil {
+        return err
+    }
+
+    c.ID = int(lastID)
+    // created_at is set by DB default, you may fetch it later if needed
+    return nil
+}
