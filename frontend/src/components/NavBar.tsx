@@ -19,7 +19,7 @@ export default function NavBar() {
 
   return (
     <nav className="navbar">
-      <Link href="/home" className="nav-link">Home</Link>
+      <Link href="/" className="nav-link">Home</Link>
 
       {!loading && isAuthenticated && (
         <>

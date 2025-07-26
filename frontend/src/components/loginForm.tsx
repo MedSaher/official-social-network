@@ -29,7 +29,7 @@ export default function LoginForm() {
         creds, {
         withCredentials: true // important to send and receive cookies:
       })
-      router.push('/home')
+      router.push('/')
     } catch (err) {
       setError('Login failed: Invalid email or password')
     } finally {
