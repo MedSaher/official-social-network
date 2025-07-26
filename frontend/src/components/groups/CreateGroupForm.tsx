@@ -21,8 +21,9 @@ export default function CreateGroupForm() {
     setMessage('Submitting...');
 
     try {
-      const res = await fetch('http://localhost:8080/api/groups', {
+      const res = await fetch('http://localhost:8080/api/groups/create_group', {
         method: 'POST',
+        credentials: "include",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description }),
       });
