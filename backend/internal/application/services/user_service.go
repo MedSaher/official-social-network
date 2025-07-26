@@ -38,7 +38,6 @@ func (s *UserServiceImpl) Authenticate(email, password string) (*models.User, er
 	}
 
 	user, err := s.userRepo.GetUserByEmail(email)
-
 	if err != nil || !utils.CheckPasswordHash(password, user.Password) {
 		return nil, errors.New("invalid credentials")
 	}
@@ -68,13 +67,39 @@ func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileRespons
 
 	userDTO := models.UserProfileDTOFromUser(user)
 
-	resp := &models.FullProfileResponse{
-		User:           userDTO, // convert User to UserProfileDTO
+	return &models.FullProfileResponse{
+		User:           userDTO,
 		FollowersCount: len(followers),
 		FollowingCount: len(following),
 		Followers:      followers,
 		Following:      following,
-	}
-	return resp, nil
+	}, nil
 }
 
+// ✅ NEW: GetFullProfileData with viewerID (could be used later for isFollowing logic)
+func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*models.FullProfileResponse, error) {
+	user, err := s.userRepo.GetUserByID(profileOwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	followers, err := s.followRepo.GetFollowers(profileOwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	following, err := s.followRepo.GetFollowing(profileOwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	userDTO := models.UserProfileDTOFromUser(user)
+
+	return &models.FullProfileResponse{
+		User:           userDTO,
+		FollowersCount: len(followers),
+		FollowingCount: len(following),
+		Followers:      followers,
+		Following:      following,
+	}, nil
+}
