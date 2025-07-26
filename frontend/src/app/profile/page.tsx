@@ -1,85 +1,142 @@
 "use client";
 
-import { ProfileType, PostType, UserListType } from "@/lib/types";
 import { useEffect, useState } from "react";
+import "./profile.css";
 
-type FullUserData = {
-  profile: ProfileType;
-  posts: PostType[];
-  followers?: UserListType[];   // optional if you want
-  following?: UserListType[];   // optional if you want
+type UserProfileDTO = {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl?: string | null;
+  email: string;
+  aboutMe?: string | null;
+  privacyStatus: string;
+  gender: string;
+  createdAt: string;
+};
+
+type FollowerInfo = {
+  id: number;
+  username: string;
+  avatarUrl?: string | null;
+};
+
+type FullProfileResponse = {
+  user: UserProfileDTO;
+  followers_count: number;
+  following_count: number;
+  followers: FollowerInfo[];
+  following: FollowerInfo[];
 };
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<ProfileType | null>(null);
-  const [profileData, setData] = useState<PostType[]>([]);
-  const [userList, setUserList] = useState<UserListType[]>([]);
+  const [profile, setProfile] = useState<UserProfileDTO | null>(null);
+  const [followers, setFollowers] = useState<FollowerInfo[]>([]);
+  const [following, setFollowing] = useState<FollowerInfo[]>([]);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+
   const [showOptions, setShowOptions] = useState(false);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [showBigAvatar, setShowBigAvatar] = useState(false); // 🔥 NEW STATE
 
-  // Fetch all user data in one request
   useEffect(() => {
-    async function fetchFullUserData() {
+    async function fetchFullProfile() {
       try {
-        const res = await fetch('/api/profile', { credentials: 'include' });
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        const data: FullUserData = await res.json();
-        setProfile(data.profile);
-        setData(data.posts);
-        // If your API returns followers/following by default, you can set it here:
-        // setUserList(data.followers || []);
+        const res = await fetch("http://localhost:8080/api/profile", {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+
+        const data: FullProfileResponse = await res.json();
+        console.log("Fetched profile data:", data);
+
+        setProfile(data.user);
+        setFollowers(data.followers);
+        setFollowing(data.following);
+        setFollowersCount(data.followers_count);
+        setFollowingCount(data.following_count);
       } catch (error) {
-        console.error("Failed to fetch full user data:", error);
+        console.error("Failed to fetch profile:", error);
       }
     }
-    fetchFullUserData();
+    fetchFullProfile();
   }, []);
 
-  const fetchUserList = async (listType: "followers" | "following") => {
-    try {
-      const response = await fetch(`/api/followersList?&type=${listType}`, {
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        console.error("Error:", await response.text());
-        return;
-      }
-      const data: UserListType[] = await response.json();
-      setUserList(data);
-      if (listType === "followers") {
-        setShowFollowersModal(true);
-      } else {
-        setShowFollowingModal(true);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleSelection = async (choise: "public" | "private") => {
-    setShowOptions(false);
-    try {
-      const res = await fetch(`/api/updatePrivacy`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountType: choise }),
-      });
-      if (!res.ok) {
-        throw new Error(`http error here : ${res.status}`);
-      }
-      setProfile(prev => prev ? { ...prev, accountType: choise } : prev);
-    } catch (error) {
-      console.error("Failed to update privacy:", error);
-    }
-  };
-
   return (
-    <div>
-      {/* Render your profile, posts, modals, options here */}
+    <div className="profile-container">
+      {profile && (
+        <div className="profile-card">
+          <h2>{profile.username}</h2>
+          <p>{profile.email}</p>
+          <p>
+            {profile.firstName} {profile.lastName}
+          </p>
+          <p>{profile.privacyStatus}</p>
+          <p>Gender: {profile.gender}</p>
+          <p className="joined">Joined: {profile.createdAt}</p>
+          {!profile.avatarUrl ? (
+            <div className="avatar-placeholder">No Avatar</div>
+          ) : (
+            <>
+              <img
+                src={`http://localhost:8080/${profile.avatarUrl}`}
+                alt="User Avatar"
+                className="avatar"
+                onClick={() => setShowBigAvatar(true)} // 👆 Click to open modal
+              />
+              {showBigAvatar && (
+                <div
+                  className="avatar-modal"
+                  onClick={() => setShowBigAvatar(false)}
+                >
+                  <span className="close-avatar">&times;</span>
+                  <img
+                    src={`http://localhost:8080/${profile.avatarUrl}`}
+                    alt="Full Size Avatar"
+                    className="avatar-large"
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="buttons">
+        <button onClick={() => setShowFollowersModal(true)}>
+          Followers: {followersCount}
+        </button>
+        <button onClick={() => setShowFollowingModal(true)}>
+          Following: {followingCount}
+        </button>
+      </div>
+
+      {showFollowersModal && (
+        <div className="modal">
+          <h3>Followers</h3>
+          {followers.map((f) => (
+            <div key={f.id} className="follower">
+              <p>{f.username}</p>
+              {f.avatarUrl && <img src={f.avatarUrl} alt="follower avatar" />}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showFollowingModal && (
+        <div className="modal">
+          <h3>Following</h3>
+          {following.map((f) => (
+            <div key={f.id} className="follower">
+              <p>{f.username}</p>
+              {f.avatarUrl && <img src={f.avatarUrl} alt="following avatar" />}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

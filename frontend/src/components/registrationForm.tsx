@@ -4,6 +4,22 @@ import { RegistrationFormData } from '../lib/types';
 import axios from 'axios';
 import './component.css/RegistrationForm.css'; // 👈 Import the CSS file
 
+
+const initialFormData: RegistrationFormData = {
+  email: "",
+  password: "",
+  firstName: "",
+  lastName: "",
+  dateOfBirth: "",  
+  avatar: null,
+  nickname: "",
+  aboutMe: "",
+  privacyStatus: "public",
+  gender: "",
+};
+
+
+
 const RegistrationForm = () => {
     const [formData, setFormData] = useState<RegistrationFormData>({
         email: '',
@@ -43,9 +59,9 @@ const RegistrationForm = () => {
         if (!formData.gender) newErrors.gender = 'Gender is required';
         return newErrors;
     };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -56,41 +72,41 @@ const RegistrationForm = () => {
         setLoading(true);
 
         try {
-            let avatarUrl: string | null = null;
+            const formPayload = new FormData();
+
+            // Append all the fields as form data
+            formPayload.append("email", formData.email);
+            formPayload.append("password", formData.password);
+            formPayload.append("firstName", formData.firstName);
+            formPayload.append("lastName", formData.lastName);
+            formPayload.append("gender", formData.gender);
+            formPayload.append("dateOfBirth", formData.dateOfBirth);
+            formPayload.append("aboutMe", formData.aboutMe);
+            formPayload.append("privacyStatus", formData.privacyStatus);
+            // Notice: backend expects "username" but frontend uses "nickname"
+            formPayload.append("nickname", formData.nickname || ""); // Or use "username" key if you want to rename
+
             if (formData.avatar) {
-                const avatarData = new FormData();
-                avatarData.append('avatar', formData.avatar);
-                const uploadRes = await axios.post(`http://localhost:8080/api/upload-avatar`, avatarData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
-                avatarUrl = uploadRes.data.url;
+                formPayload.append("avatar", formData.avatar);
             }
 
-            const registrationData = {
-                email: formData.email,
-                password: formData.password,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                dateOfBirth: formData.dateOfBirth,
-                aboutMe: formData.aboutMe,
-                privacyStatus: formData.privacyStatus,
-                gender: formData.gender,
-                avatarUrl,
-            };
-
-            const res = await axios.post('http://localhost:8080/api/register', registrationData, {
-                headers: { 'Content-Type': 'application/json' },
+            const res = await axios.post("http://localhost:8080/api/register", formPayload, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
-            alert('Registration successful!');
+            alert("Registration successful!");
             console.log(res.data);
+
+            // Reset form after successful registration
+            setFormData(initialFormData);
         } catch (error: any) {
-            console.error('Registration failed:', error);
-            alert(error?.response?.data?.message || 'An error occurred during registration.');
+            console.error("Registration failed:", error);
+            alert(error?.response?.data?.message || "An error occurred during registration.");
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit} className="form-container">
