@@ -55,6 +55,13 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// ✅ NEW: Serve /uploads/posts/* static files
+	if strings.HasPrefix(req.URL.Path, "/uploads/posts/") {
+		fs := http.StripPrefix("/uploads/posts/", http.FileServer(http.Dir("./uploads/posts")))
+		fs.ServeHTTP(w, req)
+		return
+	}
+
 	// Autres → fichiers statiques (Next.js build)
 	r.staticFiles.ServeHTTP(w, req)
 }

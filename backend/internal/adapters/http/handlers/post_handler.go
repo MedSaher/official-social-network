@@ -134,3 +134,22 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(post)
 }
+
+func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{
+            "error": "Method not allowed",
+        })
+        return
+    }
+
+    posts, err := h.postService.GetAllPosts(r.Context())
+    if err != nil {
+        utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{
+            "error": "Failed to fetch posts",
+        })
+        return
+    }
+
+    utils.ResponseJSON(w, http.StatusOK, posts)
+}

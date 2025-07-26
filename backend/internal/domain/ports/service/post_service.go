@@ -7,4 +7,5 @@ import (
 
 type PostService interface {
     CreatePost(ctx context.Context, userID int, groupID *int, content, privacy, imagePath string) (models.Post, error)
+    GetAllPosts(ctx context.Context) ([]models.Post, error)
 }

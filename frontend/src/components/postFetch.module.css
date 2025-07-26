@@ -1,0 +1,64 @@
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.postCard {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.postCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.privacy {
+  font-style: italic;
+}
+
+.timestamp {
+  color: #aaa;
+}
+
+.content {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  white-space: pre-line;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.message {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 40px;
+}
+
+.error {
+  text-align: center;
+  font-size: 18px;
+  color: red;
+  margin-top: 40px;
+}

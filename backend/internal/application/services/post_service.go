@@ -21,3 +21,7 @@ func (s *postService) CreatePost(ctx context.Context, userID int, groupID *int, 
     // Here you can add extra business logic, validation, or preprocessing if needed
     return s.postRepo.CreatePost(ctx, userID, groupID, content, privacy, imagePath)
 }
+
+func (s *postService) GetAllPosts(ctx context.Context) ([]models.Post, error) {
+    return s.postRepo.GetAllPosts(ctx)
+}

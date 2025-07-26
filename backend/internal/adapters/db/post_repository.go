@@ -89,3 +89,51 @@ func (r *PostRepository) CreatePost(ctx context.Context, userID int, groupID *in
 
 	return post, nil
 }
+
+func (r *PostRepository) GetAllPosts(ctx context.Context) ([]models.Post, error) {
+    rows, err := r.db.QueryContext(ctx, `
+        SELECT id, user_id, group_id, content, image_path, privacy, created_at, updated_at
+        FROM posts
+        ORDER BY created_at DESC
+    `)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var posts []models.Post
+
+    for rows.Next() {
+        var post models.Post
+        var groupID sql.NullInt64
+        var imagePath sql.NullString
+
+        err := rows.Scan(
+            &post.ID,
+            &post.UserID,
+            &groupID,
+            &post.Content,
+            &imagePath,
+            &post.Privacy,
+            &post.CreatedAt,
+            &post.UpdatedAt,
+        )
+        if err != nil {
+            return nil, err
+        }
+
+        if groupID.Valid {
+            gid := int(groupID.Int64)
+            post.GroupID = &gid
+        }
+
+        if imagePath.Valid {
+            img := imagePath.String
+            post.ImagePath = &img
+        }
+
+        posts = append(posts, post)
+    }
+
+    return posts, nil
+}
