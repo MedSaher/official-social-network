@@ -179,3 +179,36 @@ func (h *GroupHandler) FetchPendingRequests(w http.ResponseWriter, r *http.Reque
 
 	utils.ResponseJSON(w, http.StatusOK, requests)
 }
+
+// internal/adapters/http/handlers/groups.go
+
+func (h *GroupHandler) RespondToJoinRequest(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method Not Allowed"})
+		return
+	}
+
+	var req struct {
+		RequestID int  `json:"request_id"`
+		Accept    bool `json:"accept"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid JSON"})
+		return
+	}
+
+	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
+		return
+	}
+
+	err = h.groupService.RespondToJoinRequest(r.Context(), req.RequestID, userID, req.Accept)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusForbidden, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "Request handled successfully"})
+}

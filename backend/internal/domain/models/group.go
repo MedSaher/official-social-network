@@ -29,3 +29,11 @@ type GroupJoinRequest struct {
 	UserName  string `json:"user_name"`
 	CreatedAt string `json:"created_at"`
 }
+
+type GroupMember struct {
+	ID       int
+	GroupID  int
+	UserID   int
+	Status   string
+	Role     string
+}

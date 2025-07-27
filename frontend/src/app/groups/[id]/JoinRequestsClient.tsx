@@ -72,7 +72,7 @@ export default function JoinRequestsClient({ groupId }: JoinRequestsClientProps)
 
   if (loading) return <p>Loading requests...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (requests.length === 0) return <p>No pending requests.</p>;
+  if (requests === null) return <p>No pending requests.</p>;
 
   return (
     <>

@@ -131,3 +131,28 @@ func (r *GroupRepository) GetPendingRequests(ctx context.Context, groupID int) (
 
 	return requests, nil
 }
+
+func (r *GroupRepository) GetGroupMemberByID(ctx context.Context, requestID int) (*models.GroupMember, error) {
+	row := r.db.QueryRowContext(ctx, `SELECT id, group_id, user_id, status, role FROM group_members WHERE id = ?`, requestID)
+
+	var gm models.GroupMember
+	err := row.Scan(&gm.ID, &gm.GroupID, &gm.UserID, &gm.Status, &gm.Role)
+	if err != nil {
+		return nil, err
+	}
+	return &gm, nil
+}
+
+func (r *GroupRepository) IsUserGroupCreator(ctx context.Context, userID int, groupID int) (bool, error) {
+	var count int
+	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM groups WHERE id = ? AND creator_id = ?`, groupID, userID).Scan(&count)
+	return count > 0, err
+}
+
+func (r *GroupRepository) UpdateGroupMemberStatus(ctx context.Context, requestID int, newStatus string) error {
+	_, err := r.db.ExecContext(ctx, `
+		UPDATE group_members SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		newStatus, requestID,
+	)
+	return err
+}

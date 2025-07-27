@@ -73,6 +73,7 @@ func main() {
 	r.AddRoute("POST", "/api/groups/create_group", groupsHandler.CreateGroup)
 	r.AddRoute("GET", "/api/groups/fetch_groups", groupsHandler.FetchGroups)
 	r.AddPrefixRoute("POST", "/api/groups/", groupsHandler.DynamicRoutes)
+	r.AddRoute("POST", "/api/groups/join_request/respond", groupsHandler.RespondToJoinRequest)
 	// r.AddPrefixRoute("GET", "/api/groups/", groupsHandler.DynamicRoutes)
 
 	// Start server

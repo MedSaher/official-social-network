@@ -46,3 +46,35 @@ func (s *groupService) IsCreator(ctx context.Context, groupID, userID int) (bool
 func (s *groupService) 	GetPendingRequests(ctx context.Context, groupID int) ([]models.GroupJoinRequest, error){
 	return s.repo.GetPendingRequests(ctx, groupID)
 }
+
+// internal/application/services/group_service.go
+
+func (s *groupService) RespondToJoinRequest(ctx context.Context, requestID int, actorID int, accept bool) error {
+	// Get the join request
+	request, err := s.repo.GetGroupMemberByID(ctx, requestID)
+	if err != nil {
+		return fmt.Errorf("Join request not found")
+	}
+
+	// Check if actor is the creator of the group
+	isCreator, err := s.repo.IsUserGroupCreator(ctx, actorID, request.GroupID)
+	if err != nil {
+		return fmt.Errorf("Unable to check group creator: %v", err)
+	}
+	if !isCreator {
+		return fmt.Errorf("Only group creator can respond to requests")
+	}
+
+	// Update request status
+	newStatus := "declined"
+	if accept {
+		newStatus = "accepted"
+	}
+
+	err = s.repo.UpdateGroupMemberStatus(ctx, requestID, newStatus)
+	if err != nil {
+		return fmt.Errorf("Failed to update request: %v", err)
+	}
+
+	return nil
+}
