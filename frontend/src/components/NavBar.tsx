@@ -19,12 +19,13 @@ export default function NavBar() {
 
   return (
     <nav className="navbar">
-      <Link href="/" className="nav-link">Home</Link>
 
       {!loading && isAuthenticated && (
         <>
+          <Link href="/" className="nav-link">Home</Link>
           <Link href="/profile" className="nav-link">Profile</Link>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
+          <Link href="/groups" className="nav-link">gropus</Link>
         </>
       )}
 

@@ -1,0 +1,29 @@
+.main {
+    display: flex;
+    justify-content: space-between;
+    /* Spreads .groups, .posts, and .chat */
+    max-width: 1000px;
+    margin: 0 auto;
+    /* Center the whole layout */
+    height: 100vh;
+}
+
+.groups {
+    width: 20%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.posts {
+    background-color: antiquewhite;
+    width: 60%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.chat {
+    background-color: antiquewhite;
+    width: 20%;
+    max-height: 80vh;
+    overflow-y: auto;
+}

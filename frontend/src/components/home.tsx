@@ -5,6 +5,7 @@ import CreatePost from './postCreate'
 import PostList from "./postFetch"
 import CreateGroupForm from './groups/CreateGroupForm'
 import GroupList from '@/components/groups/GroupList';
+import styles from './css/home.module.css';
 
 export default function RenderHomePage() {
   const router = useRouter()
@@ -19,10 +20,15 @@ export default function RenderHomePage() {
   }
   return (
     <>
-      <div>
-        <h1>Welcome to Home Page</h1>
-        <CreateGroupForm />
-        <GroupList />
+      <div className={styles.main}>
+        <div className={styles.groups}>
+          <GroupList />
+        </div>
+        <div className='posts'>
+        </div>
+        <div className={styles.chat}>
+          slkhslh
+        </div>
       </div>
     </>
   )

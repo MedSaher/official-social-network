@@ -1,12 +1,82 @@
-.container {
+/* Floating Action Button */
+.create-group-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  /* background-image: url("../../source/image.png"); Ensure the image URL is correct */
+  width: 80px;
+  height: 80px; /* Set height to a reasonable size */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%; /* Circular button */
+  padding: 10px;
+  transition: background-color 0.3s ease;
+  z-index: 1000; /* Keep it above other elements */
+}
+.testj {
+  width: 144px;
+  height: 144px;
+}
+.create-group-button:hover {
+  background-color: #f0f0f0; /* A light background on hover */
+}
+
+/* Form Popup (Modal) */
+.formPopupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Dimmed background */
+  z-index: 999; /* Positioned behind the form */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formPopup {
   background-color: #fff;
   padding: 24px;
   max-width: 500px;
-  margin: 30px auto;
+  width: 100%;
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  z-index: 1001; /* Form appears above the overlay */
+  animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Close Button */
+.closeButton {
+  background-color: #e74c3c; /* Red background */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 12px;
+  align-self: flex-end; /* Align to the top-right of the popup */
+}
+
+.closeButton:hover {
+  background-color: #c0392b; /* Darken on hover */
+}
+
+/* Form Elements */
 .form {
   display: flex;
   flex-direction: column;
@@ -36,6 +106,16 @@
   font-size: 16px;
 }
 
+.submitBtn:hover {
+  background-color: #234c3b; /* Darken on hover */
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #2d4c3c;
+  outline: none;
+}
+
 .success {
   color: green;
   margin-top: 10px;
@@ -44,4 +124,11 @@
 .error {
   color: red;
   margin-top: 10px;
+}
+
+/* Input and Textarea Placeholder Styling */
+.input::placeholder,
+.textarea::placeholder {
+  color: #aaa; /* Lighter color for placeholders */
+  font-style: italic;
 }
