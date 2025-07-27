@@ -9,4 +9,6 @@ type GroupService interface {
 	CreateGroup(ctx context.Context, g *models.Group) error
 	GetGroupsForUser(ctx context.Context, userID int) ([]models.GroupWithUserFlags, error)
 	RequestToJoinGroup(ctx context.Context, groupID int, userID int) error
+	IsCreator(ctx context.Context, groupID, userID int) (bool, error)
+	GetPendingRequests(ctx context.Context, groupID int) ([]models.GroupJoinRequest, error)
 }

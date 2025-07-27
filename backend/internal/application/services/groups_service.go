@@ -38,3 +38,11 @@ func (s *groupService) RequestToJoinGroup(ctx context.Context, groupID int, user
 	// Insert join request
 	return s.repo.CreateJoinRequest(ctx, groupID, userID)
 }
+
+func (s *groupService) IsCreator(ctx context.Context, groupID, userID int) (bool, error){
+	return s.repo.IsCreator(ctx, groupID, userID)
+}
+
+func (s *groupService) 	GetPendingRequests(ctx context.Context, groupID int) ([]models.GroupJoinRequest, error){
+	return s.repo.GetPendingRequests(ctx, groupID)
+}

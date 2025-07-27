@@ -96,3 +96,38 @@ func (r *GroupRepository) CreateJoinRequest(ctx context.Context, groupID int, us
 	`, groupID, userID)
 	return err
 }
+
+func (r *GroupRepository) IsCreator(ctx context.Context, groupID, userID int) (bool, error) {
+	var count int
+	err := r.db.QueryRowContext(ctx,
+		"SELECT COUNT(1) FROM groups WHERE id = ? AND creator_id = ?", groupID, userID,
+	).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *GroupRepository) GetPendingRequests(ctx context.Context, groupID int) ([]models.GroupJoinRequest, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT gm.id, gm.user_id, u.user_name, gm.created_at
+		FROM group_members gm
+		JOIN users u ON gm.user_id = u.id
+		WHERE gm.group_id = ? AND gm.status = 'pending'
+	`, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var requests []models.GroupJoinRequest
+	for rows.Next() {
+		var req models.GroupJoinRequest
+		if err := rows.Scan(&req.ID, &req.UserID, &req.UserName, &req.CreatedAt); err != nil {
+			return nil, err
+		}
+		requests = append(requests, req)
+	}
+
+	return requests, nil
+}

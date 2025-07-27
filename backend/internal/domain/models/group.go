@@ -22,3 +22,10 @@ type GroupWithUserFlags struct {
 	IsCreator bool `json:"is_creator"`
 	IsMember  bool `json:"is_member"`
 }
+
+type GroupJoinRequest struct {
+	ID        int    `json:"id"`
+	UserID    int    `json:"user_id"`
+	UserName  string `json:"user_name"`
+	CreatedAt string `json:"created_at"`
+}
