@@ -8,9 +8,16 @@ import (
 )
 
 type Router struct {
-	routes      map[string]http.HandlerFunc
-	sessionServ service.SessionService
-	staticFiles map[string]http.Handler
+	routes       map[string]http.HandlerFunc
+	sessionServ  service.SessionService
+	staticFiles  map[string]http.Handler
+	prefixRoutes []prefixRoute // handles dynamic paths
+}
+
+type prefixRoute struct {
+	method  string
+	prefix  string
+	handler http.HandlerFunc
 }
 
 // NewRouter crée un nouveau routeur avec session + static frontend
@@ -29,6 +36,14 @@ func NewRouter(session service.SessionService) *Router {
 func (r *Router) AddRoute(method string, path string, handler http.HandlerFunc) {
 	key := strings.ToLower(method + ":" + path)
 	r.routes[key] = handler
+}
+
+func (r *Router) AddPrefixRoute(method string, prefix string, handler http.HandlerFunc) {
+	r.prefixRoutes = append(r.prefixRoutes, prefixRoute{
+		method:  strings.ToLower(method),
+		prefix:  prefix,
+		handler: handler,
+	})
 }
 
 // ServeHTTP gère les requêtes entrantes
@@ -61,12 +76,24 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Handle API routes
+	// Handle API routes
 	if strings.HasPrefix(req.URL.Path, "/api/") {
 		key := strings.ToLower(req.Method + ":" + req.URL.Path)
+
+		// 1. Try exact match first
 		if handler, ok := r.routes[key]; ok {
 			handler(w, req)
 			return
 		}
+
+		// 2. Then try prefix match for dynamic routes
+		for _, pr := range r.prefixRoutes {
+			if strings.ToLower(req.Method) == pr.method && strings.HasPrefix(req.URL.Path, pr.prefix) {
+				pr.handler(w, req)
+				return
+			}
+		}
+
 		http.Error(w, "API endpoint not found", http.StatusNotFound)
 		return
 	}

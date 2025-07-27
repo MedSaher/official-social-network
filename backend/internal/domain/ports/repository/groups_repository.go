@@ -7,5 +7,7 @@ import (
 
 type GroupRepository interface {
 	CreateGroup(ctx context.Context, g *models.Group) error
-	GetAllGroups(ctx context.Context) ([]models.Group, error)
+	GetAllGroupsForUser(ctx context.Context, userID int) ([]models.GroupWithUserFlags, error)
+	IsAlreadyMember(ctx context.Context, groupID int, userID int) (bool, error)
+	CreateJoinRequest(ctx context.Context, groupID int, userID int) error
 }

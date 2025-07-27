@@ -47,3 +47,27 @@
   font-size: 15px;
   color: #333;
 }
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.joinBtn {
+  background-color: #3182ce;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.viewBtn {
+  background-color: #2d4c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

@@ -69,9 +69,10 @@ func main() {
 	r.AddRoute("GET", "/api/posts/fetch_posts", postHandler.GetPosts)
 	r.AddRoute("GET", "/api/posts/fetch_comments", postHandler.FetchComments)
 
-	// groupes routes 
+	// groupes routes
 	r.AddRoute("POST", "/api/groups/create_group", groupsHandler.CreateGroup)
 	r.AddRoute("GET", "/api/groups/fetch_groups", groupsHandler.FetchGroups)
+	r.AddPrefixRoute("POST", "/api/groups/", groupsHandler.DynamicRoutes)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
