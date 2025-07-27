@@ -71,6 +71,7 @@ func main() {
 
 	// groupes routes 
 	r.AddRoute("POST", "/api/groups/create_group", groupsHandler.CreateGroup)
+	r.AddRoute("GET", "/api/groups/fetch_groups", groupsHandler.FetchGroups)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")

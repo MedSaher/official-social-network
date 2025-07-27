@@ -18,3 +18,8 @@ func NewGroupService(r repository.GroupRepository) service.GroupService {
 func (s *groupService) CreateGroup(ctx context.Context, g *models.Group) error {
 	return s.repo.CreateGroup(ctx, g)
 }
+
+// service/group_service.go
+func (s *groupService) GetAllGroups(ctx context.Context) ([]models.Group, error) {
+	return s.repo.GetAllGroups(ctx)
+}

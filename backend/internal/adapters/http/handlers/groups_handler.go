@@ -53,3 +53,17 @@ func (h *GroupHandler) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusCreated, group)
 }
 
+func (h *GroupHandler) FetchGroups(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method Not Allowed"})
+		return
+	}
+
+	groups, err := h.groupService.GetAllGroups(r.Context())
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to fetch groups"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, groups)
+}
