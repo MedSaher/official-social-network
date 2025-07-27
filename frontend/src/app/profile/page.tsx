@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CreateGroupForm from "@/components/groups/CreateGroupForm";
 import "./profile.css";
 
 type UserProfileDTO = {
@@ -81,6 +82,7 @@ export default function ProfilePage() {
             <div className="avatar-placeholder">No Avatar</div>
           ) : (
             <>
+              <CreateGroupForm />
               <img
                 src={`http://localhost:8080/${profile.avatarUrl}`}
                 alt="User Avatar"

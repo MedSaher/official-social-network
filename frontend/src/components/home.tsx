@@ -20,7 +20,6 @@ export default function RenderHomePage() {
     <>
       <div>
         <h1>Welcome to Home Page</h1>
-        <CreateGroupForm/>
       </div>
     </>
   )

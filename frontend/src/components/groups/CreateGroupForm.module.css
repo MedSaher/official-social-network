@@ -36,6 +36,15 @@
   font-size: 16px;
 }
 
+.submitBtn:hover {
+  background-color: #234c3b; /* Darken on hover */
+}
+
+.input:focus, .textarea:focus {
+  border-color: #2d4c3c;
+  outline: none;
+}
+
 .success {
   color: green;
   margin-top: 10px;
@@ -44,4 +53,33 @@
 .error {
   color: red;
   margin-top: 10px;
+}
+
+/* Optional Enhancements */
+.formPopup {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.formPopupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999; 
+}
+
+.input::placeholder, .textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
 }
