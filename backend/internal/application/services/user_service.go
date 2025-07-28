@@ -116,6 +116,16 @@ func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*mod
 	}, nil
 }
 
+func (s *UserServiceImpl) ChangePrivacyStatus(userID int, privacyStatus string) error {
+	valid := map[string]bool{
+		"public": true, "private": true, "almost_private": true,
+	}
+	if !valid[privacyStatus] {
+		return errors.New("invalid privacy status")
+	}
+	return s.userRepo.UpdatePrivacyStatus(userID, privacyStatus)
+}
+
 func (s *UserServiceImpl) SearchUsers(query string) ([]models.UserProfileDTO, error) {
 	return s.userRepo.SearchUsers(query)
 }
