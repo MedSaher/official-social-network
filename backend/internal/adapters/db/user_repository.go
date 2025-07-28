@@ -99,3 +99,54 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 
 	return user, nil
 }
+func (r *UserRepositoryImpl) SearchUsers(query string) ([]models.UserProfileDTO, error) {
+	searchQuery := "%" + query + "%"
+	sql := `
+		SELECT id, user_name, first_name, last_name
+		FROM users
+		WHERE user_name LIKE ? OR first_name LIKE ? OR last_name LIKE ?
+		LIMIT 20
+	`
+	rows, err := r.db.Query(sql, searchQuery, searchQuery, searchQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.UserProfileDTO
+	for rows.Next() {
+		var dto models.UserProfileDTO
+		if err := rows.Scan(&dto.Id, &dto.UserName, &dto.FirstName, &dto.LastName); err != nil {
+			return nil, err
+		}
+		users = append(users, dto)
+	}
+	return users, nil
+}
+
+func (r *UserRepositoryImpl) GetUserProfileByUsername(username string) (*models.UserProfileDTO, error) {
+	query := `
+		SELECT id, user_name, first_name, last_name, avatar_path, email, about_me, privacy_status, gender
+		FROM users
+		WHERE user_name = ?
+	`
+	var dto models.UserProfileDTO
+	err := r.db.QueryRow(query, username).Scan(
+		&dto.Id,
+		&dto.UserName,
+		&dto.FirstName,
+		&dto.LastName,
+		&dto.AvatarUrl,
+		&dto.Email,
+		&dto.AboutMe,
+		&dto.PrivacyStatus,
+		&dto.Gender,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &dto, nil
+}

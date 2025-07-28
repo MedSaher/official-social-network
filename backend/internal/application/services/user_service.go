@@ -99,3 +99,11 @@ func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*mod
 		FollowingCount: len(following),
 	}, nil
 }
+
+func (s *UserServiceImpl) SearchUsers(query string) ([]models.UserProfileDTO, error) {
+	return s.userRepo.SearchUsers(query)
+}
+
+func (s *UserServiceImpl) GetUserProfileByUsername(username string) (*models.UserProfileDTO, error) {
+	return s.userRepo.GetUserProfileByUsername(username)
+}

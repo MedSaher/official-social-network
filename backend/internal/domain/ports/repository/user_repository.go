@@ -8,4 +8,6 @@ type UserRepository interface {
 	RegisterNewUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(id int) (*models.User, error)
+	SearchUsers(query string) ([]models.UserProfileDTO, error)
+	GetUserProfileByUsername(username string) (*models.UserProfileDTO, error)
 }

@@ -43,3 +43,12 @@ func UserProfileDTOFromUser(u *User) UserProfileDTO {
 		CreatedAt:     u.CreatedAt,
 	}
 }
+
+func SearchUserDTOFromUser(u *User) UserProfileDTO {
+	return UserProfileDTO{
+		Id:        u.Id,
+		UserName:  u.UserName,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+	}
+}

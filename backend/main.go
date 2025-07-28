@@ -55,7 +55,8 @@ func main() {
 
 	//profile
 	r.AddRoute("GET", "/api/profile", userHandler.GetFullProfile)
-	
+	r.AddRoute("GET", "/api/search_users", userHandler.SearchUsers)
+	r.AddRoute("GET", "/api/user/by_username", userHandler.GetUserProfileByUsername)
 
 	// Follow routes
 	r.AddRoute("POST", "/api/follow", followHandler.CreateFollow)

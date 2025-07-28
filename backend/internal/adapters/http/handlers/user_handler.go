@@ -243,3 +243,48 @@ func (h *UserHandler) GetFullProfile(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseJSON(w, http.StatusOK, profileData)
 }
+func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	query := r.URL.Query().Get("q")
+	if len(query) < 2 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Query too short"})
+		return
+	}
+
+	users, err := h.userService.SearchUsers(query)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, users)
+}
+
+func (h *UserHandler) GetUserProfileByUsername(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "username is required"})
+		return
+	}
+
+	user, err := h.userService.GetUserProfileByUsername(username)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+	if user == nil {
+		utils.ResponseJSON(w, http.StatusNotFound, map[string]any{"error": "User not found"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, user)
+}
