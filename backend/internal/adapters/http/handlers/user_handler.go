@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"social_network/internal/adapters/http/utils"
@@ -34,16 +33,6 @@ func stringPtr(s string) *string {
 		return nil
 	}
 	return &s
-}
-
-// sanitizeFileName removes path separators from filenames for security
-func sanitizeFileName(name string) string {
-	return strings.Map(func(r rune) rune {
-		if r == os.PathSeparator || r == '/' || r == '\\' {
-			return -1
-		}
-		return r
-	}, name)
 }
 
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {

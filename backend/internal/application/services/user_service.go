@@ -71,8 +71,6 @@ func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileRespons
 		User:           userDTO,
 		FollowersCount: len(followers),
 		FollowingCount: len(following),
-		Followers:      followers,
-		Following:      following,
 	}, nil
 }
 
@@ -99,7 +97,5 @@ func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*mod
 		User:           userDTO,
 		FollowersCount: len(followers),
 		FollowingCount: len(following),
-		Followers:      followers,
-		Following:      following,
 	}, nil
 }
