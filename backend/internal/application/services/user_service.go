@@ -12,6 +12,7 @@ import (
 type UserServiceImpl struct {
 	userRepo   repository.UserRepository
 	followRepo repository.FollowRepository
+	postRepo   repository.PostRepository
 }
 
 func NewUserService(userRepo repository.UserRepository, followRepo repository.FollowRepository) *UserServiceImpl {
@@ -50,6 +51,7 @@ func (s *UserServiceImpl) GetProfile(id int) (*models.User, error) {
 }
 
 func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileResponse, error) {
+	fmt.Println("ffff",userID)
 	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return nil, err
@@ -65,12 +67,19 @@ func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileRespons
 		return nil, err
 	}
 
+	//get posts user
+	posts, err := s.postRepo.GetPostsByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
 	userDTO := models.UserProfileDTOFromUser(user)
 
 	return &models.FullProfileResponse{
 		User:           userDTO,
 		FollowersCount: len(followers),
 		FollowingCount: len(following),
+		Posts:          posts,
 	}, nil
 }
 

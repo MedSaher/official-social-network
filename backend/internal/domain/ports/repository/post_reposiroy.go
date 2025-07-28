@@ -10,5 +10,5 @@ type PostRepository interface {
 	GetAllPosts(ctx context.Context) ([]models.Post, error)
 	GetCommentsByPostID(ctx context.Context, postID int) ([]models.Comment, error)
 	CreateComment(ctx context.Context, c *models.Comment) error
+	GetPostsByUserID(userID int) ([]models.Post, error)
 }
-
