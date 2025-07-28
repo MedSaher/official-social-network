@@ -10,4 +10,5 @@ type FollowRepository interface {
 	GetStatusFollow(followerID, followingID int) (string, error)
 	GetFollowers(userID int) ([]models.FollowerInfo, error)
 	GetFollowing(userID int) ([]models.FollowerInfo, error)
+	IsFollowing(followerID, followingID int) (bool, error)
 }

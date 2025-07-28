@@ -169,3 +169,9 @@ func (r *FollowRepositoryImpl) GetFollowing(userID int) ([]models.FollowerInfo, 
 
 	return following, nil
 }
+
+func (r *FollowRepositoryImpl)IsFollowing(followerID, followingID int) (bool, error) {
+	var count int
+	err := r.db.QueryRow(`SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = ? AND status = 'accepted'`, followerID, followingID).Scan(&count)
+	return count > 0, err
+}

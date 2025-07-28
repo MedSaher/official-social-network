@@ -7,7 +7,7 @@ type FullProfileResponse struct {
 	Posts          []Post 
 }
 
-type PublicProfileResponse struct {
+type AnotherProfileResponse struct {
     Id            int     `json:"id"`
     UserName      string  `json:"username"`
     FirstName     string  `json:"firstName,omitempty"`   // hide if private
