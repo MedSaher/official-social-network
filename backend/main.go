@@ -55,6 +55,7 @@ func main() {
 
 	//profile
 	r.AddRoute("GET", "/api/profile", userHandler.GetFullProfile)
+	r.AddRoute("POST", "/api/profile/privacy", userHandler.ChangePrivacyStatus)
 	r.AddRoute("GET", "/api/search_users", userHandler.SearchUsers)
 	r.AddRoute("GET", "/api/user/by_username", userHandler.GetUserProfileByUsername)
 

@@ -245,6 +245,37 @@ func (h *UserHandler) GetFullProfile(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, profileData)
 }
 
+func (h *UserHandler) ChangePrivacyStatus(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	loggedUserID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+
+	var payload struct {
+		PrivacyStatus string `json:"privacyStatus"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
+		return
+	}
+
+	if err := h.userService.ChangePrivacyStatus(loggedUserID, payload.PrivacyStatus); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]any{
+		"success": true,
+		"message": "Privacy status updated successfully.",
+	})
+}
+
 func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
