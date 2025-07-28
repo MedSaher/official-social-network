@@ -99,6 +99,17 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, error) 
 
 	return user, nil
 }
+
+func (r *UserRepositoryImpl) UpdatePrivacyStatus(userID int, privacyStatus string) error {
+	query := `
+		UPDATE users
+		SET privacy_status = ?
+		WHERE id = ?
+	`
+	_, err := r.db.Exec(query, privacyStatus, userID)
+	return err
+}
+
 func (r *UserRepositoryImpl) SearchUsers(query string) ([]models.UserProfileDTO, error) {
 	searchQuery := "%" + query + "%"
 	sql := `
