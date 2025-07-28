@@ -183,6 +183,7 @@ func (r *PostRepository) CreateComment(ctx context.Context, c *models.Comment) e
 }
 
 func (r *PostRepository) GetPostsByUserID(userID int) ([]models.Post, error) {
+
 	query := `SELECT id, user_id, group_id, content, image_path, privacy, created_at, updated_at FROM posts WHERE user_id = ? ORDER BY created_at DESC`
 	rows, err := r.db.Query(query, userID)
 	if err != nil {

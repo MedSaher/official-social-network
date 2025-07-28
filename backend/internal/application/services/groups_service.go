@@ -53,16 +53,16 @@ func (s *groupService) RespondToJoinRequest(ctx context.Context, requestID int, 
 	// Get the join request
 	request, err := s.repo.GetGroupMemberByID(ctx, requestID)
 	if err != nil {
-		return fmt.Errorf("Join request not found")
+		return fmt.Errorf("join request not found")
 	}
 
 	// Check if actor is the creator of the group
 	isCreator, err := s.repo.IsUserGroupCreator(ctx, actorID, request.GroupID)
 	if err != nil {
-		return fmt.Errorf("Unable to check group creator: %v", err)
+		return fmt.Errorf("unable to check group creator: %v", err)
 	}
 	if !isCreator {
-		return fmt.Errorf("Only group creator can respond to requests")
+		return fmt.Errorf("only group creator can respond to requests")
 	}
 
 	// Update request status
@@ -73,7 +73,7 @@ func (s *groupService) RespondToJoinRequest(ctx context.Context, requestID int, 
 
 	err = s.repo.UpdateGroupMemberStatus(ctx, requestID, newStatus)
 	if err != nil {
-		return fmt.Errorf("Failed to update request: %v", err)
+		return fmt.Errorf("failed to update request: %v", err)
 	}
 
 	return nil

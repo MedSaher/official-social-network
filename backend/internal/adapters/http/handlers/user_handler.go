@@ -224,6 +224,7 @@ func (h *UserHandler) GetFullProfile(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
 		return
 	}
+
 	// Optionally get profile owner ID from query param if viewing another user
 	profileID := r.URL.Query().Get("user_id")
 	if profileID == "" {
@@ -243,6 +244,7 @@ func (h *UserHandler) GetFullProfile(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseJSON(w, http.StatusOK, profileData)
 }
+
 func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})

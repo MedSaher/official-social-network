@@ -32,7 +32,7 @@ func main() {
 	groupsRepo := db.NewGroupRepository(sqliteDB)
 
 	// Services
-	userService := services.NewUserService(userRepo, followRepo)
+	userService := services.NewUserService(userRepo, followRepo,postRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
 	followService := services.NewFollowService(followRepo, userRepo)
 	postService := services.NewPostService(postRepo)

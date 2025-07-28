@@ -15,8 +15,8 @@ type UserServiceImpl struct {
 	postRepo   repository.PostRepository
 }
 
-func NewUserService(userRepo repository.UserRepository, followRepo repository.FollowRepository) *UserServiceImpl {
-	return &UserServiceImpl{userRepo: userRepo, followRepo: followRepo}
+func NewUserService(userRepo repository.UserRepository, followRepo repository.FollowRepository,postRepo repository.PostRepository) *UserServiceImpl {
+	return &UserServiceImpl{userRepo: userRepo, followRepo: followRepo,postRepo: postRepo}
 }
 
 func (s *UserServiceImpl) Register(user *models.User) error {
@@ -51,7 +51,7 @@ func (s *UserServiceImpl) GetProfile(id int) (*models.User, error) {
 }
 
 func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileResponse, error) {
-	fmt.Println("ffff",userID)
+	fmt.Println("ffff", userID)
 	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return nil, err
@@ -85,6 +85,7 @@ func (s *UserServiceImpl) GetFullProfile(userID int) (*models.FullProfileRespons
 
 // ✅ NEW: GetFullProfileData with viewerID (could be used later for isFollowing logic)
 func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*models.FullProfileResponse, error) {
+	fmt.Println("cccccccccc",profileOwnerID)
 	user, err := s.userRepo.GetUserByID(profileOwnerID)
 	if err != nil {
 		return nil, err
@@ -100,12 +101,18 @@ func (s *UserServiceImpl) GetFullProfileData(viewerID, profileOwnerID int) (*mod
 		return nil, err
 	}
 
+	//get posts user
+	posts, err := s.postRepo.GetPostsByUserID(profileOwnerID)
+	if err != nil {
+		return nil, err
+	}
 	userDTO := models.UserProfileDTOFromUser(user)
 
 	return &models.FullProfileResponse{
 		User:           userDTO,
 		FollowersCount: len(followers),
 		FollowingCount: len(following),
+		Posts:          posts,
 	}, nil
 }
 
