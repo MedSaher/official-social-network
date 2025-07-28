@@ -67,6 +67,7 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-container">
+      <CreateGroupForm />
       {profile && (
         <div className="profile-card">
           <h2>{profile.username}</h2>
@@ -81,7 +82,6 @@ export default function ProfilePage() {
             <div className="avatar-placeholder">No Avatar</div>
           ) : (
             <>
-            <CreateGroupForm />
               <img
                 src={`http://localhost:8080/${profile.avatarUrl}`}
                 alt="User Avatar"
