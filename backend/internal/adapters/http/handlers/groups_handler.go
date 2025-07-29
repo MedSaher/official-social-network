@@ -70,6 +70,7 @@ func (h *GroupHandler) FetchGroups(w http.ResponseWriter, r *http.Request) {
 
 	groups, err := h.groupService.GetGroupsForUser(r.Context(), userID)
 	if err != nil {
+		fmt.Println("error fetching groups:", err)
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to fetch groups"})
 		return
 	}

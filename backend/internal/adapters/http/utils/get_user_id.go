@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"net/http"
+
 	"social_network/internal/domain/ports/service"
 )
 

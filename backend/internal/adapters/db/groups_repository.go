@@ -64,7 +64,6 @@ func (r *GroupRepository) GetAllGroupsForUser(ctx context.Context, userID int) (
 			g.description,
 			g.creator_id,
 			g.created_at,
-			g.updated_at,
 			CASE WHEN g.creator_id = ? THEN 1 ELSE 0 END as is_creator,
 			EXISTS (
 				SELECT 1 FROM group_members gm
@@ -84,7 +83,7 @@ func (r *GroupRepository) GetAllGroupsForUser(ctx context.Context, userID int) (
 		var isCreatorInt, isMemberInt int
 		if err := rows.Scan(
 			&g.ID, &g.Title, &g.Description, &g.CreatorID,
-			&g.CreatedAt, &g.UpdatedAt,
+			&g.CreatedAt,
 			&isCreatorInt, &isMemberInt,
 		); err != nil {
 			return nil, err
