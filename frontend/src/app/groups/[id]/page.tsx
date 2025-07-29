@@ -24,16 +24,42 @@ interface Event {
   creator_name: string;
 }
 
+interface GroupInfo {
+  id: number;
+  title: string;
+  description: string;
+  creator_id: number;
+  posts_count: number;
+  events_count: number;
+}
+
 export default function GroupPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState('posts');
   const [posts, setPosts] = useState<Post[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [loadingGroupInfo, setLoadingGroupInfo] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function fetchGroupInfo() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/groups/${id}/group_info`, { 
+          credentials: 'include' 
+        });
+        if (!res.ok) throw new Error('Failed to fetch group info');
+        const data = await res.json();
+        setGroupInfo(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoadingGroupInfo(false);
+      }
+    }
+
     async function fetchPosts() {
       try {
         const res = await fetch(`http://localhost:8080/api/groups/${id}/posts`, { credentials: 'include' });
@@ -60,6 +86,7 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
       }
     }
 
+    fetchGroupInfo();
     fetchPosts();
     fetchEvents();
   }, [id]);
@@ -121,7 +148,7 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
               </div>
             ) : error ? (
               <p className={styles.error}>{error}</p>
-            ) : events === null ? (
+            ) : events === null? (
               <p className={styles.placeholder}>No upcoming events. Create one to get started!</p>
             ) : (
               <div className={styles.eventsGrid}>
@@ -175,12 +202,25 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.headerContent}>
-          <h1 className={styles.groupTitle}>Group Name</h1>
-          <p className={styles.groupDescription}>This is a group description that tells members what this group is about.</p>
-          <div className={styles.groupStats}>
-            <span>250 Members</span>
-            <span>15 Online</span>
-          </div>
+          {loadingGroupInfo ? (
+            <div className={styles.loading}>
+              <div className={styles.spinner}></div>
+              <p>Loading group info...</p>
+            </div>
+          ) : error ? (
+            <p className={styles.error}>{error}</p>
+          ) : groupInfo ? (
+            <>
+              <h1 className={styles.groupTitle}>{groupInfo.title}</h1>
+              <p className={styles.groupDescription}>{groupInfo.description}</p>
+              <div className={styles.groupStats}>
+                <span>{groupInfo.posts_count} Posts</span>
+                <span>{groupInfo.events_count} Events</span>
+              </div>
+            </>
+          ) : (
+            <p className={styles.error}>Failed to load group information</p>
+          )}
         </div>
         <div className={styles.headerActions}>
           <button className={styles.inviteBtn}>Invite People</button>
