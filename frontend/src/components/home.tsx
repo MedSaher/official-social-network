@@ -7,6 +7,9 @@ import CreateGroupForm from './groups/CreateGroupForm'
 import GroupList from '@/components/groups/GroupList';
 import styles from './css/home.module.css';
 
+import AllUsers from './user/fetchuser';
+ 
+
 export default function RenderHomePage() {
   const router = useRouter()
   const { logout } = useAuth()
@@ -27,7 +30,7 @@ export default function RenderHomePage() {
         <div className='posts'>
         </div>
         <div className={styles.chat}>
-          slkhslh
+          <AllUsers />
         </div>
       </div>
     </>
