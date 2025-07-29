@@ -29,6 +29,14 @@ type UserProfileDTO struct {
 	CreatedAt     string  `json:"createdAt"`
 }
 
+// Create a model to ease working on chat
+type ChatUser struct {
+	Id          int    `json:"id"`
+	NickName    string `json:"nick_name"`
+	IsOnline    bool   `json:"is_online"`
+	UnreadCount int    `json:"unread_count"`
+}
+
 func UserProfileDTOFromUser(u *User) UserProfileDTO {
 	return UserProfileDTO{
 		Id:            u.Id,

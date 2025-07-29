@@ -81,6 +81,13 @@ func main() {
 	r.AddRoute("POST", "/api/groups/join_request/respond", groupsHandler.RespondToJoinRequest)
 	// r.AddPrefixRoute("GET", "/api/groups/", groupsHandler.DynamicRoutes)
 
+
+	// chat handler:
+		// craete Chat Broker :
+	chatBroker := services.NewChatBroker()
+	go chatBroker.RunChatBroker()
+
+
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
 	err = http.ListenAndServe(":8080", r)
