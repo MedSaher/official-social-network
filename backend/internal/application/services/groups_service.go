@@ -78,3 +78,7 @@ func (s *groupService) RespondToJoinRequest(ctx context.Context, requestID int, 
 
 	return nil
 }
+
+func (s *groupService) GetUserRole(ctx context.Context, groupID, userID int) (string, error) {
+	return s.repo.GetUserRole(ctx, groupID, userID)
+}

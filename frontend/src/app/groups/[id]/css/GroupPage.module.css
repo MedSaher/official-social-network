@@ -1,0 +1,75 @@
+/* app/groups/[id]/GroupPage.module.css */
+.container {
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(135deg, #e8e8e8, #f0f4f8);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid #ccc;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.nav a:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.main {
+  flex-grow: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+  margin-bottom: 30px;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  color: #222;
+  font-size: 1.4rem;
+}
+
+.placeholder {
+  color: #777;
+  font-style: italic;
+}

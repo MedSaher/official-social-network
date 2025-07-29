@@ -17,22 +17,44 @@ func NewGroupRepository(db *sql.DB) *GroupRepository {
 }
 
 func (r *GroupRepository) CreateGroup(ctx context.Context, g *models.Group) error {
-	result, err := r.db.ExecContext(ctx, `
+	// Start a transaction to ensure atomicity
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// Insert the group
+	result, err := tx.ExecContext(ctx, `
 		INSERT INTO groups (creator_id, title, description)
 		VALUES (?, ?, ?)`,
 		g.CreatorID, g.Title, g.Description,
 	)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	lastID, err := result.LastInsertId()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	g.ID = int(lastID)
-	return nil
+
+	// Insert into group_members as 'admin' and 'accepted'
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO group_members (group_id, user_id, status, role)
+		VALUES (?, ?, 'accepted', 'admin')
+	`, g.ID, g.CreatorID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit the transaction
+	return tx.Commit()
 }
+
 
 func (r *GroupRepository) GetAllGroupsForUser(ctx context.Context, userID int) ([]models.GroupWithUserFlags, error) {
 	rows, err := r.db.QueryContext(ctx, `
@@ -150,9 +172,31 @@ func (r *GroupRepository) IsUserGroupCreator(ctx context.Context, userID int, gr
 }
 
 func (r *GroupRepository) UpdateGroupMemberStatus(ctx context.Context, requestID int, newStatus string) error {
+	if newStatus == "declined" {
+		_, err := r.db.ExecContext(ctx, `
+			DELETE FROM group_members WHERE id = ?`, requestID)
+		return err
+	}
+
 	_, err := r.db.ExecContext(ctx, `
 		UPDATE group_members SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
 		newStatus, requestID,
 	)
 	return err
+}
+
+func (r *GroupRepository) GetUserRole(ctx context.Context, groupID, userID int) (string, error) {
+	var role string
+	err := r.db.QueryRowContext(ctx, `
+		SELECT role FROM group_members
+		WHERE group_id = ? AND user_id = ? AND status = 'accepted'
+	`, groupID, userID).Scan(&role)
+
+	if err == sql.ErrNoRows {
+		return "none", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return role, nil
 }
