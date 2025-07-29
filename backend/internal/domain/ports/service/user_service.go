@@ -11,4 +11,5 @@ type UserService interface {
 	ChangePrivacyStatus(userID int, privacyStatus string) error
 	SearchUsers(query string) ([]models.UserProfileDTO, error)
 	GetUserProfileByUsername(username string) (*models.UserProfileDTO, error)
+	GetAnotherProfile(requesterID int, username string) (*models.AnotherProfileResponse, error)
 }

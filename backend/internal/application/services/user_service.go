@@ -133,3 +133,57 @@ func (s *UserServiceImpl) SearchUsers(query string) ([]models.UserProfileDTO, er
 func (s *UserServiceImpl) GetUserProfileByUsername(username string) (*models.UserProfileDTO, error) {
 	return s.userRepo.GetUserProfileByUsername(username)
 }
+
+func (s *UserServiceImpl) GetAnotherProfile(viewerID int, profileOwnerUsername string) (*models.AnotherProfileResponse, error) {
+	user, err := s.userRepo.GetUserByUsername(profileOwnerUsername)
+	if err != nil {
+		return nil, err
+	}
+
+	followers, err := s.followRepo.GetFollowers(user.Id)
+	if err != nil {
+		return nil, err
+	}
+	following, err := s.followRepo.GetFollowing(user.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	isSelf := viewerID == user.Id
+
+	isFollowing := false
+	status, err := s.followRepo.GetStatusFollow(viewerID, user.Id)
+	if err == nil && status == "accepted" {
+		isFollowing = true
+	}
+
+	canSeePosts := user.PrivacyStatus == "public" || isSelf || isFollowing
+
+	var posts []models.Post
+	if canSeePosts {
+		posts, _ = s.postRepo.GetPostsByUserID(user.Id)
+	}
+
+	resp := &models.AnotherProfileResponse{
+		Id:             user.Id,
+		UserName:       user.UserName,
+		FirstName:      "",
+		LastName:       "",
+		AvatarUrl:      user.AvatarPath,
+		AboutMe:        nil,
+		PrivacyStatus:  user.PrivacyStatus,
+		FollowersCount: len(followers),
+		FollowingCount: len(following),
+		Posts:          posts,
+		IsSelf:         isSelf,
+		IsFollowing:    isFollowing,
+	}
+
+	if canSeePosts {
+		resp.FirstName = user.FirstName
+		resp.LastName = user.LastName
+		resp.AboutMe = user.AboutMe
+	}
+
+	return resp, nil
+}
