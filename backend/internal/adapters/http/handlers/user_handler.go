@@ -321,3 +321,31 @@ func (h *UserHandler) GetUserProfileByUsername(w http.ResponseWriter, r *http.Re
 
 	utils.ResponseJSON(w, http.StatusOK, user)
 }
+
+func (h *UserHandler) GetAnotherProfile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	// api/profile/another?username=beta_user)
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "username is required"})
+		return
+	}
+
+	viewerID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+
+	resp, err := h.userService.GetAnotherProfile(viewerID, username)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, resp)
+}
