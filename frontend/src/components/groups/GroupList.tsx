@@ -72,7 +72,7 @@ export default function GroupList() {
     <div className={styles.groupList}>
       <h2 className={styles.heading}>All Groups</h2>
 
-      {groups.length === 0 ? (
+      {groups === null ? (
         <p className={styles.message}>No groups found.</p>
       ) : (
         groups.map((group) => (

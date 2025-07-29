@@ -83,12 +83,13 @@ func (h *GroupHandler) DynamicRoutes(w http.ResponseWriter, r *http.Request) {
 	if strings.HasSuffix(r.URL.Path, "/join") {
 		h.JoinGroup(w, r)
 		return
-		} else if strings.HasSuffix(r.URL.Path, "/pending_requests") {
+	} else if strings.HasSuffix(r.URL.Path, "/pending_requests") {
 		h.FetchPendingRequests(w, r)
 		return
+	} else if strings.HasSuffix(r.URL.Path, "/member_role") {
+		h.GetMemberRole(w, r)
 	}
 }
-
 
 func (h *GroupHandler) JoinGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -211,4 +212,33 @@ func (h *GroupHandler) RespondToJoinRequest(w http.ResponseWriter, r *http.Reque
 	}
 
 	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "Request handled successfully"})
+}
+
+func (h *GroupHandler) GetMemberRole(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupIDStr := parts[3]
+
+	groupID, err := strconv.Atoi(groupIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid group id"})
+		return
+	}
+
+	role, err := h.groupService.GetUserRole(r.Context(), groupID, userID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to fetch role"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"role": role})
 }
