@@ -11,4 +11,5 @@ type UserRepository interface {
 	UpdatePrivacyStatus(userID int, privacyStatus string) error
 	SearchUsers(query string) ([]models.UserProfileDTO, error)
 	GetUserProfileByUsername(username string) (*models.UserProfileDTO, error)
+	GetUserByUsername(username string) (*models.User, error) 
 }

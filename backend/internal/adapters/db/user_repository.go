@@ -161,3 +161,34 @@ func (r *UserRepositoryImpl) GetUserProfileByUsername(username string) (*models.
 	}
 	return &dto, nil
 }
+
+func (r *UserRepositoryImpl) GetUserByUsername(username string) (*models.User, error) {
+	query := `
+		SELECT id, email, password_hash, first_name, last_name, date_of_birth, avatar_path, user_name, about_me, privacy_status, gender, created_at
+		FROM users
+		WHERE user_name = ?
+		LIMIT 1
+	`
+	user := &models.User{}
+	err := r.db.QueryRow(query, username).Scan(
+		&user.Id,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.AvatarPath,
+		&user.UserName,
+		&user.AboutMe,
+		&user.PrivacyStatus,
+		&user.Gender,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
+}
