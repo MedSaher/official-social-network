@@ -16,4 +16,6 @@ type GroupRepository interface {
 	IsUserGroupCreator(ctx context.Context, userID int, groupID int) (bool, error)
 	UpdateGroupMemberStatus(ctx context.Context, requestID int, newStatus string) error
 	GetUserRole(ctx context.Context, groupID, userID int) (string, error)
+	GetGroupPosts(ctx context.Context, groupID int) ([]models.GroupPost, error)
+	GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error)
 }

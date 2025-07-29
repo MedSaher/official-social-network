@@ -37,3 +37,12 @@ type GroupMember struct {
 	Status   string
 	Role     string
 }
+
+type GroupPost struct {
+	ID        int       `json:"id"`
+	Content   string    `json:"content"`
+	CreatedAt string    `json:"created_at"`
+	ImagePath *string   `json:"image_path,omitempty"`
+	UserID    int       `json:"user_id"`
+	UserName  string    `json:"user_name"`
+}

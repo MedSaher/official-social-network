@@ -82,3 +82,11 @@ func (s *groupService) RespondToJoinRequest(ctx context.Context, requestID int, 
 func (s *groupService) GetUserRole(ctx context.Context, groupID, userID int) (string, error) {
 	return s.repo.GetUserRole(ctx, groupID, userID)
 }
+
+func (s *groupService) GetGroupPosts(ctx context.Context, groupID int) ([]models.GroupPost, error) {
+	return s.repo.GetGroupPosts(ctx, groupID)
+}
+
+func (s *groupService) GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error) {
+	return s.repo.GetGroupEvents(ctx, groupID)
+}

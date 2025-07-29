@@ -200,3 +200,51 @@ func (r *GroupRepository) GetUserRole(ctx context.Context, groupID, userID int) 
 	}
 	return role, nil
 }
+
+
+// GetPostsForGroup returns posts for a specific group including the user_name
+func (r *GroupRepository) GetGroupPosts(ctx context.Context, groupID int) ([]models.GroupPost, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT p.id, p.content, p.created_at, p.image_path, p.user_id, u.user_name
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		WHERE p.group_id = ?
+		ORDER BY p.created_at DESC
+	`, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.GroupPost
+	for rows.Next() {
+		var post models.GroupPost
+		if err := rows.Scan(&post.ID, &post.Content, &post.CreatedAt, &post.ImagePath, &post.UserID, &post.UserName); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+func (r *GroupRepository) GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, group_id, creator_id, title, description, event_date, created_at
+		FROM group_events
+		WHERE group_id = ?
+		ORDER BY created_at DESC`, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var events []models.GroupEvent
+	for rows.Next() {
+		var e models.GroupEvent
+		if err := rows.Scan(&e.ID, &e.GroupID, &e.CreatorID, &e.Title, &e.Description, &e.EventDate, &e.CreatedAt); err != nil {
+			return nil, err
+		}
+		events = append(events, e)
+	}
+	return events, nil
+}
