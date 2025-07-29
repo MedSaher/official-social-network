@@ -25,8 +25,9 @@ export default function NavBar() {
           <Link href="/" className="nav-link">Home</Link>
           <Link href="/profile" className="nav-link">Profile</Link>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
-          <Link href="/groups" className="nav-link">groups</Link>
-           <Link href="/chat" className="nav-link">chat</Link>
+          <Link href="/groups" className="nav-link">gropus</Link>
+          <Link href="/chat" className="nav-link">chat</Link>
+
         </>
       )}
 

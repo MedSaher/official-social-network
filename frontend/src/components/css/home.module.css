@@ -23,7 +23,9 @@
 
 .chat {
     background-color: antiquewhite;
-    width: 20%;
+    min-height: 20vh;    
+    width: 200px;
     max-height: 80vh;
     overflow-y: auto;
+    border-radius: 19px;
 }
