@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"social_network/internal/adapters/http/utils"
@@ -27,6 +28,7 @@ type MarkAsReadRequest struct {
 }
 
 func (soc *WebSocketHandler) SocketHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("->->-------------------------------------------------------------------------------->>>")
 	if r.Method != "GET" {
 		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"message": "invalid method"})
 		return
