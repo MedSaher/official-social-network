@@ -44,3 +44,12 @@ type GroupPost struct {
 	UserID    int       `json:"user_id"`
 	UserName  string    `json:"user_name"`
 }
+
+type GroupInfo struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	CreatorID   int    `json:"creator_id"`
+	PostsCount  int    `json:"posts_count"`
+	EventsCount int    `json:"events_count"`
+}

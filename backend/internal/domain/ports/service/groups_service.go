@@ -15,4 +15,5 @@ type GroupService interface {
 	GetUserRole(ctx context.Context, groupID, userID int) (string, error)
 	GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error)
 	GetGroupPosts(ctx context.Context, groupID int) ([]models.GroupPost, error)
+	GetGroupInfo(ctx context.Context, groupID int) (*models.GroupInfo, error)
 }

@@ -247,3 +247,22 @@ func (r *GroupRepository) GetGroupEvents(ctx context.Context, groupID int) ([]mo
 	}
 	return events, nil
 }
+
+func (r *GroupRepository) GetGroupInfo(ctx context.Context, groupID int) (*models.GroupInfo, error) {
+	query := `
+	SELECT 
+		g.id, g.title, g.description, g.creator_id,
+		(SELECT COUNT(*) FROM posts WHERE group_id = g.id) AS posts_count,
+		(SELECT COUNT(*) FROM group_events WHERE group_id = g.id) AS events_count
+	FROM groups g
+	WHERE g.id = ?
+	`
+	row := r.db.QueryRowContext(ctx, query, groupID)
+
+	var info models.GroupInfo
+	err := row.Scan(&info.ID, &info.Title, &info.Description, &info.CreatorID, &info.PostsCount, &info.EventsCount)
+	if err != nil {
+		return nil, err
+	}
+	return &info, nil
+}

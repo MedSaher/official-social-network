@@ -18,4 +18,5 @@ type GroupRepository interface {
 	GetUserRole(ctx context.Context, groupID, userID int) (string, error)
 	GetGroupPosts(ctx context.Context, groupID int) ([]models.GroupPost, error)
 	GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error)
+	GetGroupInfo(ctx context.Context, groupID int) (*models.GroupInfo, error)
 }

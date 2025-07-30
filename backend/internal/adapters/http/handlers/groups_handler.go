@@ -90,11 +90,18 @@ func (h *GroupHandler) DynamicRoutes(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if strings.HasSuffix(r.URL.Path, "/member_role") {
 		h.GetMemberRole(w, r)
-	} else if strings.HasSuffix(r.URL.Path, "/posts"){
+		return
+	} else if strings.HasSuffix(r.URL.Path, "/posts") {
 		h.GetGroupPosts(w, r)
+		return
 	} else if strings.HasSuffix(r.URL.Path, "/events") {
-		h.GetGroupEvents(w, r)
+		h.GetGroupEvents(w, r)  
+		return
+	} else if strings.HasSuffix(r.URL.Path, "/group_info") {
+		h.GetGroupInfo(w, r)
+		return
 	}
+
 }
 
 func (h *GroupHandler) JoinGroup(w http.ResponseWriter, r *http.Request) {
@@ -300,4 +307,26 @@ func (h *GroupHandler) GetGroupEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.ResponseJSON(w, http.StatusOK, events)
+}
+
+func (h *GroupHandler) GetGroupInfo(w http.ResponseWriter, r *http.Request) {
+	// Extract group ID from URL
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupID, err := strconv.Atoi(parts[3])
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+
+	info, err := h.groupService.GetGroupInfo(r.Context(), groupID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to fetch group info"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, info)
 }

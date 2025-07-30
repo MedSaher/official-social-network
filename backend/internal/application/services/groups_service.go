@@ -90,3 +90,7 @@ func (s *groupService) GetGroupPosts(ctx context.Context, groupID int) ([]models
 func (s *groupService) GetGroupEvents(ctx context.Context, groupID int) ([]models.GroupEvent, error) {
 	return s.repo.GetGroupEvents(ctx, groupID)
 }
+
+func (s *groupService) GetGroupInfo(ctx context.Context, groupID int) (*models.GroupInfo, error) {
+	return s.repo.GetGroupInfo(ctx, groupID)
+}
