@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS private_messages (
     content TEXT NOT NULL,
     is_read BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    read_at DATETIME,
+    -- read_at DATETIME,
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );

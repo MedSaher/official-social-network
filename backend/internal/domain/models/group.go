@@ -17,8 +17,6 @@ type GroupWithUserFlags struct {
 	Description string    `json:"description"`
 	CreatorID   int       `json:"creator_id"`
 	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-
 	IsCreator bool `json:"is_creator"`
 	IsMember  bool `json:"is_member"`
 }
@@ -36,4 +34,13 @@ type GroupMember struct {
 	UserID   int
 	Status   string
 	Role     string
+}
+
+type GroupPost struct {
+	ID        int       `json:"id"`
+	Content   string    `json:"content"`
+	CreatedAt string    `json:"created_at"`
+	ImagePath *string   `json:"image_path,omitempty"`
+	UserID    int       `json:"user_id"`
+	UserName  string    `json:"user_name"`
 }

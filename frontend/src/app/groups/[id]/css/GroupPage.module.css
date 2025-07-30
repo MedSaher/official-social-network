@@ -1,0 +1,412 @@
+/* app/groups/[id]/GroupPage.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.header {
+  background-color: #4a6fa5;
+  color: white;
+  padding: 2rem;
+  background-image: linear-gradient(rgba(74, 111, 165, 0.85), rgba(74, 111, 165, 0.85)), 
+                    url('https://images.unsplash.com/photo-1518655048521-f130df041f66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.groupTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.groupDescription {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  max-width: 800px;
+  line-height: 1.5;
+}
+
+.groupStats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.inviteBtn, .settingsBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inviteBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+}
+
+.inviteBtn:hover {
+  background-color: #3d8b40;
+}
+
+.settingsBtn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.settingsBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mainLayout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1.5rem;
+  gap: 2rem;
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  background-color: #edf2f7;
+}
+
+.navItem.active {
+  background-color: #4299e1;
+  color: white;
+}
+
+.navIcon {
+  font-size: 1.2rem;
+}
+
+.content {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.tabContent {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #718096;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(66, 153, 225, 0.2);
+  border-radius: 50%;
+  border-top-color: #4299e1;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  color: #e53e3e;
+  padding: 1rem;
+  background-color: #fff5f5;
+  border-radius: 6px;
+  border-left: 4px solid #e53e3e;
+}
+
+.placeholder {
+  color: #a0aec0;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+.postsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.postCard {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.userAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #4299e1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.userName {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.postTime {
+  color: #718096;
+  font-size: 0.85rem;
+}
+
+.postContent {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  color: #2d3748;
+}
+
+.postImageContainer {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.postImage {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.eventCard {
+  display: flex;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-3px);
+}
+
+.eventDate {
+  background-color: #4299e1;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.eventDay {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.eventMonth {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.eventDetails {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.eventTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+}
+
+.eventCreator {
+  color: #718096;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.eventDescription {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.eventActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.goingBtn, .notGoingBtn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.goingBtn {
+  background-color: #48bb78;
+  color: white;
+  border: none;
+}
+
+.goingBtn:hover {
+  background-color: #38a169;
+}
+
+.notGoingBtn {
+  background-color: transparent;
+  color: #e53e3e;
+  border: 1px solid #e53e3e;
+}
+
+.notGoingBtn:hover {
+  background-color: #fff5f5;
+}
+
+.createEventBtn {
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.createEventBtn:hover {
+  background-color: #3182ce;
+}
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chatMessages {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: #f7fafc;
+}
+
+.chatInput {
+  display: flex;
+  padding: 1rem;
+  background-color: white;
+  border-top: 1px solid #e2e8f0;
+}
+
+.chatInput input {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.sendBtn {
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sendBtn:hover {
+  background-color: #3182ce;
+}

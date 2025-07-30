@@ -36,8 +36,10 @@ export default function JoinRequestsClient({ groupId }: JoinRequestsClientProps)
 
         const data = await res.json();
         setRequests(data);
-      } catch (err: any) {
-        setError(err.message || 'Unknown error');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message || 'Unknown error');
+        }
       } finally {
         setLoading(false);
       }
@@ -65,8 +67,10 @@ export default function JoinRequestsClient({ groupId }: JoinRequestsClientProps)
 
       setRequests((prev) => prev.filter((req) => req.id !== requestId));
       setActionStatus(`Request ${accept ? 'accepted' : 'declined'} successfully.`);
-    } catch (err: any) {
-      setActionStatus(err.message || 'Unknown error');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setActionStatus(err.message || 'Unknown error');
+      }
     }
   }
 

@@ -18,7 +18,7 @@ export default function LoginForm() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    let creds = {
+    const creds = {
       email: email,
       password: password
     }
@@ -29,6 +29,7 @@ export default function LoginForm() {
         creds, {
         withCredentials: true // important to send and receive cookies:
       })
+      login() // Call the login function from AuthContext
       router.push('/')
     } catch (err) {
       setError('Login failed: Invalid email or password')
@@ -67,7 +68,7 @@ export default function LoginForm() {
       </form>
       {error && <p className="login-error">{error}</p>}
       <p className="login-footer">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{' '}
         <a href="/register">Register</a>
       </p>
     </div>

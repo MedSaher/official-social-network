@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 
 	"social_network/internal/domain/models"
 	"social_network/internal/domain/ports/repository"
@@ -42,7 +41,7 @@ func (r *UserRepositoryImpl) RegisterNewUser(user *models.User) error {
 }
 
 func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
-	fmt.Println(" user by ID:", id)
+	// fmt.Println(" user by ID:", id)
 	query := `
 		SELECT id, user_name, date_of_birth, gender, password_hash,
 		       email, first_name, last_name, avatar_path, about_me, privacy_status, created_at
@@ -63,8 +62,7 @@ func (r *UserRepositoryImpl) GetUserByID(id int) (*models.User, error) {
 		&user.PrivacyStatus,
 		&user.CreatedAt,
 	)
-	fmt.Println("Fetching user by ID:", user.Id)
-
+	// fmt.Println("Fetching user by ID:", user.Id)
 	if err != nil {
 		return nil, err
 	}

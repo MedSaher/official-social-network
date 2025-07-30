@@ -34,9 +34,11 @@ export default function GroupList() {
 
         const data = await res.json();
         setGroups(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        setError(err.message || 'Error loading groups');
+        if (err instanceof Error) {
+          setError(err.message || 'Error loading groups');
+        }
       } finally {
         setLoading(false);
       }
@@ -72,7 +74,7 @@ export default function GroupList() {
     <div className={styles.groupList}>
       <h2 className={styles.heading}>All Groups</h2>
 
-      {groups.length === 0 ? (
+      {groups === null ? (
         <p className={styles.message}>No groups found.</p>
       ) : (
         groups.map((group) => (

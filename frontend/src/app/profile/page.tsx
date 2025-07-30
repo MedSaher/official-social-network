@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import "./profile.css";
 import CreateGroupForm from "@/components/groups/CreateGroupForm";
+import CreatePost from "@/components/postCreate";
+import PostList from "@/components/postFetch";
 type UserProfileDTO = {
   id: number;
   username: string;
@@ -138,6 +140,9 @@ export default function ProfilePage() {
           ))}
         </div>
       )}
+      <div className="post-list">
+        <PostList />
+      </div>
     </div>
   );
 }

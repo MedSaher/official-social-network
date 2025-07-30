@@ -70,6 +70,7 @@ func (h *GroupHandler) FetchGroups(w http.ResponseWriter, r *http.Request) {
 
 	groups, err := h.groupService.GetGroupsForUser(r.Context(), userID)
 	if err != nil {
+		fmt.Println("error fetching groups:", err)
 		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Failed to fetch groups"})
 		return
 	}
@@ -80,15 +81,21 @@ func (h *GroupHandler) FetchGroups(w http.ResponseWriter, r *http.Request) {
 // inside handlers/group_handler.go
 
 func (h *GroupHandler) DynamicRoutes(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
 	if strings.HasSuffix(r.URL.Path, "/join") {
 		h.JoinGroup(w, r)
 		return
-		} else if strings.HasSuffix(r.URL.Path, "/pending_requests") {
+	} else if strings.HasSuffix(r.URL.Path, "/pending_requests") {
 		h.FetchPendingRequests(w, r)
 		return
+	} else if strings.HasSuffix(r.URL.Path, "/member_role") {
+		h.GetMemberRole(w, r)
+	} else if strings.HasSuffix(r.URL.Path, "/posts"){
+		h.GetGroupPosts(w, r)
+	} else if strings.HasSuffix(r.URL.Path, "/events") {
+		h.GetGroupEvents(w, r)
 	}
 }
-
 
 func (h *GroupHandler) JoinGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -211,4 +218,86 @@ func (h *GroupHandler) RespondToJoinRequest(w http.ResponseWriter, r *http.Reque
 	}
 
 	utils.ResponseJSON(w, http.StatusOK, map[string]string{"message": "Request handled successfully"})
+}
+
+func (h *GroupHandler) GetMemberRole(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupIDStr := parts[3]
+
+	groupID, err := strconv.Atoi(groupIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid group id"})
+		return
+	}
+
+	role, err := h.groupService.GetUserRole(r.Context(), groupID, userID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to fetch role"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, map[string]string{"role": role})
+}
+
+func (h *GroupHandler) GetGroupPosts(w http.ResponseWriter, r *http.Request) {
+	_, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupIDStr := parts[3]
+
+	groupID, err := strconv.Atoi(groupIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid group id"})
+		return
+	}
+	posts, err := h.groupService.GetGroupPosts(r.Context(), groupID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to fetch posts"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, posts)
+}
+
+func (h *GroupHandler) GetGroupEvents(w http.ResponseWriter, r *http.Request) {
+	_, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "unauthorized"})
+		return
+	}
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupIDStr := parts[3]
+
+	groupID, err := strconv.Atoi(groupIDStr)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid group id"})
+		return
+	}
+	events, err := h.groupService.GetGroupEvents(r.Context(), groupID)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "failed to fetch events"})
+		return
+	}
+	utils.ResponseJSON(w, http.StatusOK, events)
 }

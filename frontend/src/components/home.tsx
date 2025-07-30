@@ -6,10 +6,15 @@ import PostList from "./postFetch"
 import CreateGroupForm from './groups/CreateGroupForm'
 import GroupList from '@/components/groups/GroupList';
 import styles from './css/home.module.css';
+import AllUsers from './user/fetchuser';
+import { useState } from 'react';
 
 export default function RenderHomePage() {
   const router = useRouter()
   const { logout } = useAuth()
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [refreshPosts, setRefreshPosts] = useState(false);
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -25,9 +30,12 @@ export default function RenderHomePage() {
           <GroupList />
         </div>
         <div className='posts'>
+          <CreatePost />
+          <PostList />
+
         </div>
         <div className={styles.chat}>
-          slkhslh
+          <AllUsers />
         </div>
       </div>
     </>

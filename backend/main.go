@@ -24,25 +24,33 @@ func main() {
 		log.Fatal("Migration error:", err)
 	}
 
+	// craete Chat Broker :
+	chatBroker := services.NewChatBroker()
+	go chatBroker.RunChatBroker()
+
 	// Repositories
 	sessionRepo := db.NewSessionRepository(sqliteDB)
 	followRepo := db.NewFollowRepository(sqliteDB)
 	userRepo := db.NewUserRepository(sqliteDB)
 	postRepo := db.NewPostRepository(sqliteDB)
 	groupsRepo := db.NewGroupRepository(sqliteDB)
+	messageRepo := db.NewMessageRepository(sqliteDB)
 
 	// Services
-	userService := services.NewUserService(userRepo, followRepo,postRepo)
+	userService := services.NewUserService(userRepo, followRepo, postRepo)
 	sessionService := services.NewSessionService(userRepo, sessionRepo)
 	followService := services.NewFollowService(followRepo, userRepo)
 	postService := services.NewPostService(postRepo)
 	groupsService := services.NewGroupService(groupsRepo)
+	webSocketService := services.NewWebSocketService(chatBroker, messageRepo, sessionRepo, userRepo)
+	// messagesSer := services.NewMessageService(messageRepo, sessionRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userService, sessionService)
 	followHandler := handlers.NewFollowHandler(followService, sessionService)
 	postHandler := handlers.NewPostHandler(postService, sessionService)
 	groupsHandler := handlers.NewGroupHandler(groupsService, sessionService)
+	webSocketHandler := handlers.NewWebSocketHandler(webSocketService, sessionService)
 
 	// Router
 	r := router.NewRouter(sessionService)
@@ -53,7 +61,7 @@ func main() {
 	r.AddRoute("POST", "/api/logout", userHandler.Logout)
 	r.AddRoute("GET", "/api/check-session", userHandler.CheckSession)
 
-	//profile
+	// profile
 	r.AddRoute("GET", "/api/profile", userHandler.GetFullProfile)
 	r.AddRoute("POST", "/api/profile/privacy", userHandler.ChangePrivacyStatus)
 	r.AddRoute("GET", "/api/search_users", userHandler.SearchUsers)
@@ -78,9 +86,12 @@ func main() {
 	// groupes routes
 	r.AddRoute("POST", "/api/groups/create_group", groupsHandler.CreateGroup)
 	r.AddRoute("GET", "/api/groups/fetch_groups", groupsHandler.FetchGroups)
-	r.AddPrefixRoute("POST", "/api/groups/", groupsHandler.DynamicRoutes)
 	r.AddRoute("POST", "/api/groups/join_request/respond", groupsHandler.RespondToJoinRequest)
-	// r.AddPrefixRoute("GET", "/api/groups/", groupsHandler.DynamicRoutes)
+	r.AddPrefixRoute("POST", "/api/groups/", groupsHandler.DynamicRoutes)
+	r.AddPrefixRoute("GET", "/api/groups/", groupsHandler.DynamicRoutes)
+
+	// Chat routes:
+	r.AddRoute("GET", "/api/ws", webSocketHandler.SocketHandler)
 
 	// Start server
 	log.Println("🚀 Server running on http://localhost:8080")
