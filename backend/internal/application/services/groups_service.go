@@ -94,3 +94,9 @@ func (s *groupService) GetGroupEvents(ctx context.Context, groupID int) ([]model
 func (s *groupService) GetGroupInfo(ctx context.Context, groupID int) (*models.GroupInfo, error) {
 	return s.repo.GetGroupInfo(ctx, groupID)
 }
+
+// internal/application/services/group_service.go
+
+func (s *groupService) CreateGroupEvent(ctx context.Context, event *models.GroupEvent) error {
+	return s.repo.InsertGroupEvent(ctx, event)
+}

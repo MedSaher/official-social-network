@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import styles from './css/GroupPage.module.css';
 import GroupAdminWrapper from './GroupAdmin';
 import CreatePost from '@/components/postCreate';
+import CreateEventModal from './CreatEvent';
 
 interface Post {
   id: number;
@@ -44,11 +45,15 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
   const [loadingGroupInfo, setLoadingGroupInfo] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+   // Move these hooks to the top level
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+
   useEffect(() => {
     async function fetchGroupInfo() {
       try {
-        const res = await fetch(`http://localhost:8080/api/groups/${id}/group_info`, { 
-          credentials: 'include' 
+        const res = await fetch(`http://localhost:8080/api/groups/${id}/group_info`, {
+          credentials: 'include'
         });
         if (!res.ok) throw new Error('Failed to fetch group info');
         const data = await res.json();
@@ -130,9 +135,9 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
                     <p className={styles.postContent}>{post.content}</p>
                     {post.image_path && (
                       <div className={styles.postImageContainer}>
-                        <img 
-                          src={`http://localhost:8080/${post.image_path}`} 
-                          alt="Post" 
+                        <img
+                          src={`http://localhost:8080/${post.image_path}`}
+                          alt="Post"
                           className={styles.postImage}
                         />
                       </div>
@@ -143,10 +148,23 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
             )}
           </div>
         );
-      case 'events':
+       case 'events':
         return (
           <div className={styles.tabContent}>
-            <button className={styles.createEventBtn}>+ Create Event</button>
+            <button
+              className={styles.createEventBtn}
+              onClick={() => setShowCreateEventModal(true)}
+            >
+              + Create Event
+            </button>
+
+            {showCreateEventModal && (
+              <CreateEventModal
+                groupId={id}
+                onClose={() => setShowCreateEventModal(false)}
+              />
+            )}
+
             {loadingEvents ? (
               <div className={styles.loading}>
                 <div className={styles.spinner}></div>
@@ -154,15 +172,19 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
               </div>
             ) : error ? (
               <p className={styles.error}>{error}</p>
-            ) : events === null? (
+            ) : events === null ? (
               <p className={styles.placeholder}>No upcoming events. Create one to get started!</p>
             ) : (
               <div className={styles.eventsGrid}>
                 {events.map(event => (
                   <div key={event.id} className={styles.eventCard}>
                     <div className={styles.eventDate}>
-                      <span className={styles.eventDay}>{new Date(event.event_date).getDate()}</span>
-                      <span className={styles.eventMonth}>{new Date(event.event_date).toLocaleString('default', { month: 'short' })}</span>
+                      <span className={styles.eventDay}>
+                        {new Date(event.event_date).getDate()}
+                      </span>
+                      <span className={styles.eventMonth}>
+                        {new Date(event.event_date).toLocaleString('default', { month: 'short' })}
+                      </span>
                     </div>
                     <div className={styles.eventDetails}>
                       <h4 className={styles.eventTitle}>{event.title}</h4>
@@ -237,28 +259,28 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
       <div className={styles.mainLayout}>
         <div className={styles.sidebar}>
           <nav className={styles.nav}>
-            <button 
+            <button
               className={`${styles.navItem} ${activeTab === 'posts' ? styles.active : ''}`}
               onClick={() => setActiveTab('posts')}
             >
               <span className={styles.navIcon}>📝</span>
               Posts
             </button>
-            <button 
+            <button
               className={`${styles.navItem} ${activeTab === 'events' ? styles.active : ''}`}
               onClick={() => setActiveTab('events')}
             >
               <span className={styles.navIcon}>📅</span>
               Events
             </button>
-            <button 
+            <button
               className={`${styles.navItem} ${activeTab === 'members' ? styles.active : ''}`}
               onClick={() => setActiveTab('members')}
             >
               <span className={styles.navIcon}>👥</span>
               Members
             </button>
-            <button 
+            <button
               className={`${styles.navItem} ${activeTab === 'chat' ? styles.active : ''}`}
               onClick={() => setActiveTab('chat')}
             >

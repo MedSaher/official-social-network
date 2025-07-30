@@ -266,3 +266,22 @@ func (r *GroupRepository) GetGroupInfo(ctx context.Context, groupID int) (*model
 	}
 	return &info, nil
 }
+
+// internal/adapters/db/group_repository.go
+
+func (r *GroupRepository) InsertGroupEvent(ctx context.Context, event *models.GroupEvent) error {
+	query := `
+		INSERT INTO group_events (group_id, creator_id, title, description, event_date)
+		VALUES (?, ?, ?, ?, ?)
+	`
+	_, err := r.db.ExecContext(ctx, query,
+		event.GroupID,
+		event.CreatorID,
+		event.Title,
+		event.Description,
+		event.EventDate,
+	)
+
+	return err
+}
+

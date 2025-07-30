@@ -53,3 +53,14 @@ type GroupInfo struct {
 	PostsCount  int    `json:"posts_count"`
 	EventsCount int    `json:"events_count"`
 }
+
+type GroupEvent struct {
+	ID          int    `json:"id"`
+	GroupID     int    `json:"group_id"`
+	CreatorID   int    `json:"creator_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	EventDate   string `json:"event_date"` // ISO string
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}

@@ -100,6 +100,8 @@ func (h *GroupHandler) DynamicRoutes(w http.ResponseWriter, r *http.Request) {
 	} else if strings.HasSuffix(r.URL.Path, "/group_info") {
 		h.GetGroupInfo(w, r)
 		return
+	} else if strings.HasSuffix(r.URL.Path, "/create_event") {
+		h.CreateGroupEvent(w, r)
 	}
 
 }
@@ -329,4 +331,48 @@ func (h *GroupHandler) GetGroupInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ResponseJSON(w, http.StatusOK, info)
+}
+
+// internal/adapters/http/handlers/group_handler.go
+
+func (h *GroupHandler) CreateGroupEvent(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("here")
+	if r.Method != http.MethodPost {
+		utils.ResponseJSON(w, http.StatusMethodNotAllowed, map[string]any{"error": "Method not allowed"})
+		return
+	}
+
+	userID, err := utils.GetCurrentUserID(r, h.sessionService)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Unauthorized"})
+		return
+	}
+
+	// Extract group ID from URL
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+	groupID, err := strconv.Atoi(parts[3])
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid group ID"})
+		return
+	}
+
+	var event models.GroupEvent
+	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Invalid JSON"})
+		return
+	}
+
+	event.GroupID = groupID
+	event.CreatorID = userID
+
+	if err := h.groupService.CreateGroupEvent(r.Context(), &event); err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, map[string]any{"error": "Could not create event"})
+		return
+	}
+
+	utils.ResponseJSON(w, http.StatusCreated, event)
 }
