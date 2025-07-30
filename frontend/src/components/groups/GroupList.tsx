@@ -34,9 +34,11 @@ export default function GroupList() {
 
         const data = await res.json();
         setGroups(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        setError(err.message || 'Error loading groups');
+        if (err instanceof Error) {
+          setError(err.message || 'Error loading groups');
+        }
       } finally {
         setLoading(false);
       }

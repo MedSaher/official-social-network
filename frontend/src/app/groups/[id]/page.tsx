@@ -53,8 +53,10 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
         if (!res.ok) throw new Error('Failed to fetch group info');
         const data = await res.json();
         setGroupInfo(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        }
       } finally {
         setLoadingGroupInfo(false);
       }
@@ -66,8 +68,10 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
         if (!res.ok) throw new Error('Failed to fetch posts');
         const data = await res.json();
         setPosts(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        }
       } finally {
         setLoadingPosts(false);
       }
@@ -79,8 +83,10 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
         if (!res.ok) throw new Error('Failed to fetch events');
         const data = await res.json();
         setEvents(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        }
       } finally {
         setLoadingEvents(false);
       }

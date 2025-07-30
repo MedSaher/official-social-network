@@ -18,8 +18,8 @@ const CURRENT_USER_ID = 5;
 // Replace with actual receiver ID logic (could come from session or group metadata)
 const RECEIVER_ID = 10;
 
-export default function Chatpage({ params }: { params: { id: string } }) {
-    const { id: groupId } = params;
+export default function Chatpage({ params }: any) {
+    const groupId = params.id;
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);

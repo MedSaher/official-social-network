@@ -99,9 +99,11 @@ const RegistrationForm = () => {
 
             // Reset form after successful registration
             setFormData(initialFormData);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Registration failed:", error);
-            alert(error?.response?.data?.message || "An error occurred during registration.");
+            if (error instanceof Error) {
+                alert(error.message || "An error occurred during registration.");
+            }
         } finally {
             setLoading(false);
         }

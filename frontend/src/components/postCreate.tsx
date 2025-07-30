@@ -39,19 +39,22 @@ export default function CreatePost({ groupId }: PostCreateProps) {
       const data = await res.json();
 
       if (res.ok) {
+        console.log('Post created successfully:', data);
+        
         setResponseColor('green');
         setResponseMsg('✅ Post created successfully!');
         setContent('');
         setPrivacy('public');
         setImage(null);
-        (e.target as HTMLFormElement).reset();
       } else {
         setResponseColor('red');
         setResponseMsg(`❌ Error: ${data.error || 'Unknown error'}`);
       }
-    } catch (err: any) {
-      setResponseColor('red');
-      setResponseMsg(`❌ Network error: ${err.message || 'Unknown error'}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setResponseColor('red');
+        setResponseMsg(`❌ Network error: ${err.message || 'Unknown error'}`);
+      }
     }
   }
 

@@ -43,6 +43,7 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := p.sessionService.GetUserIdFromSession(token.Value)
 	if err != nil {
+		fmt.Println("Error getting user ID from session:", err)
 		utils.ResponseJSON(w, http.StatusUnauthorized, map[string]any{"error": "Invalid or expired session token"})
 		return
 	}
@@ -50,6 +51,7 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	// Parse multipart form, limit max upload size (e.g. 10MB)
 	err = r.ParseMultipartForm(10 << 20) // 10MB
 	if err != nil {
+		fmt.Println("Error parsing form data:", err)
 		utils.ResponseJSON(w, http.StatusBadRequest, map[string]any{"error": "Failed to parse form data"})
 		return
 	}
