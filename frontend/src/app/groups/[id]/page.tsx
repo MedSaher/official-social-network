@@ -110,7 +110,7 @@ export default function GroupPage({ params }: { params: Promise<{ id: string }> 
               </div>
             ) : error ? (
               <p className={styles.error}>{error}</p>
-            ) : posts.length === 0 ? (
+            ) : posts === null ? (
               <p className={styles.placeholder}>No posts yet. Be the first to share something!</p>
             ) : (
               <div className={styles.postsGrid}>
